@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Elite Homes</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" style="display:flex;align-items:center;gap:10px"><img src="assets/logo.png" style="height:38px;width:38px;object-fit:contain;border-radius:6px"/><span style="color:var(--gold)">Elite <span style="color:var(--text)">Homes</span></span></div>
+  <div class="nav-links">
+    <button class="nav-btn active" onclick="showPage('projects',this)">Our Projects</button>
+    <button class="nav-btn" onclick="showPage('quote',this)">Get a Quote</button>
+    <button class="nav-btn" onclick="showPage('packages',this)">Packages</button>
+    <button class="nav-btn" onclick="showPage('ceiling',this)">False Ceiling</button>
+    <button class="nav-btn" onclick="showPage('fc-finalize',this)" id="nav-fc-finalize" style="display:none">Finalize FC</button>
+    <button class="nav-btn" onclick="showPage('terms',this)">Terms</button>
+    <button class="nav-btn" onclick="showPage('finalize',this)" id="nav-finalize" style="display:none">Finalize Quote</button>
+  </div>
+  <button class="nav-cta" onclick="showPage('quote',document.querySelectorAll('.nav-btn')[1])">Get Quote →</button>
+</nav>
+
+<!-- ===================== PAGE 1: PROJECTS ===================== -->
+<div class="page active" id="page-projects">
+  <div class="hero">
+    <h1>Building <em>Dreams</em><br/>Into Reality</h1>
+    <p>Elite Homes — Property Promotors based in Tiruvannamalai, Tamil Nadu. Building dreams with quality and trust.</p>
+  </div>
+
+  <div class="section">
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-num">120+</div>
+        <div class="stat-label">Projects Completed</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">8+</div>
+        <div class="stat-label">Years Experience</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">98%</div>
+        <div class="stat-label">Client Satisfaction</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">4.2L+</div>
+        <div class="stat-label">Sq.ft. Built</div>
+      </div>
+    </div>
+
+    <div class="section-title">Featured <em>Projects</em></div>
+    <p class="section-sub">A selection of our finest completed constructions across Tamil Nadu</p>
+
+    <div class="projects-grid" id="projectsGrid">
+      <div class="project-card">
+        <div class="project-img-bg proj-1" style="position:relative">
+          <span>🏛️</span>
+          <span class="project-badge badge-premium">Premium</span>
+        </div>
+        <div class="project-info">
+          <h3>Lakshmi Residency, Tiruvannamalai</h3>
+          <p style="font-size:0.85rem;color:var(--muted)">4BHK luxury residence with full teak woodwork, Jaquar fittings, and designer tiles throughout.</p>
+          <div class="project-meta">
+            <div class="project-meta-item"><strong>3,400 sft</strong>Built Area</div>
+            <div class="project-meta-item"><strong>2023</strong>Completed</div>
+            <div class="project-meta-item"><strong>₹83.7L</strong>Value</div>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">Residential</span>
+            <span class="project-tag">4BHK</span>
+            <span class="project-tag">TATA TMT</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-img-bg proj-2" style="position:relative">
+          <span>🏗️</span>
+          <span class="project-badge badge-standard">Standard</span>
+        </div>
+        <div class="project-info">
+          <h3>Murugan Complex, Dindigul</h3>
+          <p style="font-size:0.85rem;color:var(--muted)">Commercial G+2 complex with Ramco cement structure, Legrand electrification, and Astral plumbing.</p>
+          <div class="project-meta">
+            <div class="project-meta-item"><strong>5,200 sft</strong>Built Area</div>
+            <div class="project-meta-item"><strong>2024</strong>Completed</div>
+            <div class="project-meta-item"><strong>₹1.17Cr</strong>Value</div>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">Commercial</span>
+            <span class="project-tag">G+2</span>
+            <span class="project-tag">Waterproofed</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-img-bg proj-3" style="position:relative">
+          <span>🏡</span>
+          <span class="project-badge badge-basic">Basic</span>
+        </div>
+        <div class="project-info">
+          <h3>Anand Villa, Theni</h3>
+          <p style="font-size:0.85rem;color:var(--muted)">3BHK family home with UPVC windows, Parryware fittings, and quality fly-ash brick construction.</p>
+          <div class="project-meta">
+            <div class="project-meta-item"><strong>1,800 sft</strong>Built Area</div>
+            <div class="project-meta-item"><strong>2024</strong>Completed</div>
+            <div class="project-meta-item"><strong>₹36.9L</strong>Value</div>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">Residential</span>
+            <span class="project-tag">3BHK</span>
+            <span class="project-tag">Fly-Ash</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-img-bg proj-4" style="position:relative">
+          <span>🏢</span>
+          <span class="project-badge badge-premium">Premium</span>
+        </div>
+        <div class="project-info">
+          <h3>Sri Balaji Towers, Tiruvannamalai</h3>
+          <p style="font-size:0.85rem;color:var(--muted)">G+3 apartment building with premium wire-cut bricks, RR Kabel wiring, and Asian Paints finish.</p>
+          <div class="project-meta">
+            <div class="project-meta-item"><strong>8,600 sft</strong>Built Area</div>
+            <div class="project-meta-item"><strong>2023</strong>Completed</div>
+            <div class="project-meta-item"><strong>₹2.19Cr</strong>Value</div>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">Apartment</span>
+            <span class="project-tag">G+3</span>
+            <span class="project-tag">TATA TMT</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-img-bg proj-5" style="position:relative">
+          <span>🏘️</span>
+          <span class="project-badge badge-standard">Standard</span>
+        </div>
+        <div class="project-info">
+          <h3>Selvam Residence, Virudhunagar</h3>
+          <p style="font-size:0.85rem;color:var(--muted)">Elegant 2BHK with red brick walls, teak main door, Jaquar sanitary fittings and Nippon paint.</p>
+          <div class="project-meta">
+            <div class="project-meta-item"><strong>1,450 sft</strong>Built Area</div>
+            <div class="project-meta-item"><strong>2025</strong>Completed</div>
+            <div class="project-meta-item"><strong>₹32.6L</strong>Value</div>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">Residential</span>
+            <span class="project-tag">2BHK</span>
+            <span class="project-tag">Anti-Termite</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-img-bg proj-6" style="position:relative">
+          <span>🏪</span>
+          <span class="project-badge badge-standard">Standard</span>
+        </div>
+        <div class="project-info">
+          <h3>Karthik Showroom, Sivakasi</h3>
+          <p style="font-size:0.85rem;color:var(--muted)">Ground floor commercial showroom with 5" slab, Legrand switches, Finolex wiring, Astral pipes.</p>
+          <div class="project-meta">
+            <div class="project-meta-item"><strong>2,200 sft</strong>Built Area</div>
+            <div class="project-meta-item"><strong>2025</strong>Completed</div>
+            <div class="project-meta-item"><strong>₹49.5L</strong>Value</div>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">Commercial</span>
+            <span class="project-tag">Showroom</span>
+            <span class="project-tag">Waterproofed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo" style="display:flex;align-items:center;gap:10px"><img src="assets/logo.png" style="height:40px;width:40px;object-fit:contain;border-radius:6px"/><span>Elite Homes</span></div>
+    <div class="footer-contact">
+      <strong>+91 88848 38995</strong> &nbsp;|&nbsp; eliteconstructionstvm@gmail.com &nbsp;|&nbsp; Tiruvannamalai, Tamil Nadu
+    </div>
+  </footer>
+</div>
+
+<!-- ===================== PAGE 2: QUOTE ===================== -->
+<div class="page" id="page-quote">
+
+  <!-- ADMIN VIEW -->
+  <div id="admin-view">
+    <div class="hero">
+      <h1>Prepare <em>Client Quote</em></h1>
+      <p>Fill in the details, generate a shareable link and send it to your client via WhatsApp or email.</p>
+    </div>
+    <div class="section">
+      <div class="quote-layout">
+        <div>
+          <div class="quote-form-card">
+            <div class="section-title" style="font-size:1.3rem;margin-bottom:4px">Client Details</div>
+            <p style="color:var(--muted);font-size:0.85rem;margin-bottom:24px">Who is this quote for?</p>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Client Name</label>
+                <input class="form-input" type="text" id="clientName" placeholder="e.g. Rajesh Kumar" oninput="updatePreview()"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input class="form-input" type="tel" id="clientPhone" placeholder="+91 99999 00000" oninput="updatePreview()"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Project Location</label>
+              <input class="form-input" type="text" id="clientLocation" placeholder="e.g. Anna Nagar, Tiruvannamalai" oninput="updatePreview()"/>
+            </div>
+          </div>
+
+          <div class="quote-form-card" style="margin-top:20px">
+            <div class="section-title" style="font-size:1.3rem;margin-bottom:4px">Project Details</div>
+            <p style="color:var(--muted);font-size:0.85rem;margin-bottom:24px">Construction specifications</p>
+            <div class="form-group">
+              <label class="form-label">Select Package</label>
+              <select class="form-select" id="packageType" onchange="updatePreview()">
+                <option value="basic">Basic — ₹2,100 / sft</option>
+                <option value="standard" selected>Standard — ₹2,300 / sft</option>
+                <option value="premium">Premium — ₹2,550 / sft</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Project Type</label>
+              <select class="form-select" id="projectType" onchange="updatePreview()">
+                <option value="Residential">Residential</option>
+                <option value="Commercial">Commercial</option>
+              </select>
+            </div>
+            <!-- FLOOR DIMENSIONS -->
+            <div class="form-group">
+              <label class="form-label">Number of Floors</label>
+              <input class="form-input" type="number" id="numFloors" min="1" max="20"
+                placeholder="Enter number of floors" value="1" oninput="buildFloorInputs()"
+                style="text-align:center;font-size:1rem;font-weight:700"/>
+              <div style="font-size:0.75rem;color:var(--muted);margin-top:4px">Enter total floors including ground floor (e.g. 4 for G+3)</div>
+            </div>
+            <div id="floorDimsContainer"></div>
+            <div style="margin-top:4px;padding:12px 14px;background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.2);border-radius:10px;display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:0.85rem;color:var(--muted)">Total Built-up Area</span>
+              <span style="font-size:1.1rem;font-weight:700;color:var(--gold)" id="totalSftDisplay">0 sft</span>
+            </div>
+            <input type="hidden" id="builtArea" value="0"/>
+            <!-- ADD-ONS -->
+            <div class="form-group" style="margin-top:20px">
+              <label class="form-label">Additional Works</label>
+              <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+                <!-- Septic Tank -->
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;">
+                  <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:0">
+                    <input type="checkbox" id="chk-septic" onchange="toggleAddon('septic')" style="accent-color:var(--gold);width:16px;height:16px"/>
+                    <span style="font-size:0.88rem;font-weight:600">Septic Tank <span style="color:var(--muted);font-weight:400">(₹25/litre)</span></span>
+                  </label>
+                  <div id="addon-septic" style="display:none;margin-top:10px;display:none">
+                    <input class="form-input" type="number" id="val-septic" placeholder="Capacity in litres" oninput="updatePreview()" style="margin-top:0"/>
+                  </div>
+                </div>
+                <!-- UG Sump -->
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;">
+                  <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:0">
+                    <input type="checkbox" id="chk-sump" onchange="toggleAddon('sump')" style="accent-color:var(--gold);width:16px;height:16px"/>
+                    <span style="font-size:0.88rem;font-weight:600">UG Sump <span style="color:var(--muted);font-weight:400">(₹30/litre)</span></span>
+                  </label>
+                  <div id="addon-sump" style="display:none">
+                    <input class="form-input" type="number" id="val-sump" placeholder="Capacity in litres" oninput="updatePreview()" style="margin-top:10px"/>
+                  </div>
+                </div>
+                <!-- RCC Tank -->
+                <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;">
+                  <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:0">
+                    <input type="checkbox" id="chk-rcc" onchange="toggleAddon('rcc')" style="accent-color:var(--gold);width:16px;height:16px"/>
+                    <span style="font-size:0.88rem;font-weight:600">RCC Overhead Tank <span style="color:var(--muted);font-weight:400">(₹32/litre)</span></span>
+                  </label>
+                  <div id="addon-rcc" style="display:none">
+                    <input class="form-input" type="number" id="val-rcc" placeholder="Capacity in litres" oninput="updatePreview()" style="margin-top:10px"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Quote Valid Until</label>
+              <input class="form-input" type="date" id="validUntil" oninput="updatePreview()"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Notes to Client</label>
+              <input class="form-input" type="text" id="notes" placeholder="e.g. Excludes compound wall and borewell" oninput="updatePreview()"/>
+            </div>
+            <button class="form-btn" onclick="generateShareLink()">🔗 Generate Shareable Link</button>
+            <button class="form-btn-outline" onclick="downloadQuoteHTML()" style="margin-top:10px">📄 Download Quote as HTML</button>
+            <button class="form-btn-outline" onclick="goToFinalize()" style="margin-top:10px;border-color:rgba(107,158,138,0.6);color:#8ECDB8">⚙️ Go to Finalize Quote</button>
+            <div class="share-box" id="shareBox">
+              <div class="share-label">Share this link with your client</div>
+              <div class="share-link-row">
+                <input class="share-link-input" id="shareLinkInput" readonly onclick="this.select()"/>
+                <button class="copy-btn" onclick="copyLink()">Copy</button>
+              </div>
+              <button class="wa-btn" onclick="shareWhatsApp()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                Send via WhatsApp
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-preview">
+          <h3>📋 Live Preview</h3>
+          <div class="preview-row"><span class="preview-label">Client Name</span><span class="preview-val" id="prev-name">—</span></div>
+          <div class="preview-row"><span class="preview-label">Phone</span><span class="preview-val" id="prev-phone">—</span></div>
+          <div class="preview-row"><span class="preview-label">Location</span><span class="preview-val" id="prev-location">—</span></div>
+          <div class="preview-row"><span class="preview-label">Package</span><span class="preview-val" id="prev-package"><span class="package-pill pill-standard">Standard</span></span></div>
+          <div class="preview-row"><span class="preview-label">Rate</span><span class="preview-val" id="prev-rate">₹2,300 / sft</span></div>
+          <div class="preview-row"><span class="preview-label">Total Built-up Area</span><span class="preview-val" id="prev-area">0 sft</span></div>
+          <div class="preview-row"><span class="preview-label">Floors</span><span class="preview-val" id="prev-floors">Ground Floor Only</span></div>
+          <div id="prev-floor-details" style="width:100%"></div>
+          <div id="prev-addons-rows"></div>
+          <div class="preview-row"><span class="preview-label">Project Type</span><span class="preview-val" id="prev-type">Residential</span></div>
+          <div class="preview-row"><span class="preview-label">Valid Until</span><span class="preview-val" id="prev-valid">—</span></div>
+          <div class="preview-total">
+            <div class="preview-total-label">Estimated Cost</div>
+            <div class="preview-total-num" id="prev-total">₹33,75,000</div>
+            <div class="preview-total-sub" id="prev-breakdown">0 sft × ₹2,300/sft</div>
+            <div id="prev-addons-total" style="font-size:0.78rem;color:var(--muted);margin-top:4px"></div>
+          </div>
+          <div style="margin-top:14px;padding:14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.07);">
+            <p style="font-size:0.76rem;color:var(--muted);line-height:1.6;">⚠️ Indicative estimate. Final cost subject to soil report, structural design, and site conditions.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLIENT VIEW -->
+  <div id="client-view" style="display:none">
+    <div class="hero">
+      <h1>Your <em>Construction Quote</em></h1>
+      <p>Prepared exclusively for you by Elite Homes</p>
+    </div>
+    <div class="section">
+      <div class="client-quote-wrap">
+        <div class="client-banner">
+          <div class="client-banner-icon">🏗️</div>
+          <div class="client-banner-text">
+            <h4>Read-only quote prepared by Elite Homes</h4>
+            <p>To discuss or proceed, contact us via WhatsApp or call directly.</p>
+          </div>
+        </div>
+        <div class="client-header">
+          <div>
+            <div style="font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Construction Quote</div>
+            <h2>Dear <em id="c-name">Client</em></h2>
+          </div>
+          <div class="quote-meta"><strong id="c-quotedate">—</strong>Valid until: <span id="c-valid">—</span></div>
+        </div>
+        <div class="client-total-card">
+          <div class="client-total-label">Estimated Project Cost</div>
+          <div class="client-total-amount" id="c-total">—</div>
+          <div class="client-total-break" id="c-break">—</div>
+        </div>
+        <div class="client-card">
+          <h3>Project Information</h3>
+          <div class="client-detail-grid">
+            <div class="client-detail-item"><div class="client-detail-label">Client Name</div><div class="client-detail-val" id="c-namedet">—</div></div>
+            <div class="client-detail-item"><div class="client-detail-label">Phone</div><div class="client-detail-val" id="c-phone">—</div></div>
+            <div class="client-detail-item"><div class="client-detail-label">Project Location</div><div class="client-detail-val" id="c-loc">—</div></div>
+            <div class="client-detail-item"><div class="client-detail-label">Project Type</div><div class="client-detail-val" id="c-type">—</div></div>
+            <div class="client-detail-item"><div class="client-detail-label">Built-up Area</div><div class="client-detail-val" id="c-area">—</div></div>
+            <div class="client-detail-item"><div class="client-detail-label">Number of Floors</div><div class="client-detail-val" id="c-floors">—</div></div>
+          </div>
+        </div>
+        <div class="client-card">
+          <h3>Selected Package</h3>
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+            <span id="c-pkgpill" class="package-pill pill-standard">Standard</span>
+            <span id="c-pkgrate" style="font-size:1.1rem;font-weight:700">₹2,300 / sft</span>
+          </div>
+          <div class="client-specs-grid" id="c-specs-grid"></div>
+          <div style="margin-top:16px;padding:14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.06);">
+            <p id="c-notes" style="font-size:0.85rem;color:var(--muted);line-height:1.6;"></p>
+          </div>
+        </div>
+        <div class="client-card">
+          <h3>Package Inclusions</h3>
+          <div id="c-addons" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
+        </div>
+        <div style="padding:14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:10px;margin-bottom:20px;">
+          <p style="font-size:0.78rem;color:var(--muted);line-height:1.7;">⚠️ <strong style="color:var(--text)">Disclaimer:</strong> This is an indicative estimate. Final project cost will be confirmed after site inspection, soil test, and structural design. Rates are subject to revision based on material market prices at time of procurement.</p>
+        </div>
+
+        <!-- COMPARISON TABLE in client view -->
+        <div class="client-card">
+          <h3>How Your Package Compares</h3>
+          <div style="overflow-x:auto">
+          <table class="compare-table" style="margin-top:4px">
+            <thead>
+              <tr>
+                <th style="text-align:left;background:var(--dark3);color:var(--muted);font-size:0.78rem">Specification</th>
+                <th class="th-basic" id="cmp-th-basic">Basic</th>
+                <th class="th-standard" id="cmp-th-standard">Standard</th>
+                <th class="th-premium" id="cmp-th-premium">Premium</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Rate / SFT</td><td id="cmp-rate-basic">₹2,100</td><td id="cmp-rate-standard">₹2,300</td><td id="cmp-rate-premium">₹2,550</td></tr>
+              <tr><td>Basement Height</td><td>2 ft above GL</td><td>3 ft above GL</td><td>3 ft above GL</td></tr>
+              <tr><td>Cement / சிமெண்ட்</td><td>Priya / Penna</td><td>Ramco / Dalmia</td><td>Ultratech</td></tr>
+              <tr><td>TMT Steel / ஸ்டீல்</td><td>Suryadev / Thirumala</td><td>Agni</td><td>TATA TMT</td></tr>
+              <tr><td>Sand / மணல்</td><td>M-Sand / P-Sand</td><td>M-Sand / P-Sand</td><td>M-Sand / P-Sand</td></tr>
+              <tr><td>Bricks / செங்கல்</td><td>Fly Ash</td><td>Red Brick</td><td>Wire-cut Red Brick</td></tr>
+              <tr><td>Main Door / மெயின் டோர்</td><td>Vengai wood frame with Flush door</td><td>Vengai wood frame with Vengai wood shutter</td><td>African Teak wood frame with African Teak wood shutter</td></tr>
+              <tr><td>Inner Doors / உள் கதவு</td><td>Vengai wood frame with Flushdoor</td><td>Vengai wood frame with Flushdoor</td><td>Vengai wood frame with Flushdoor (ISI make)</td></tr>
+              <tr><td>Exterior Doors / வெளி கதவு</td><td>Vengai Wood Frame with Vengai Shutter</td><td>Vengai Wood Frame with Vengai Shutter</td><td>Vengai Wood Frame with Vengai Shutter</td></tr>
+              <tr><td>Windows / ஜன்னல்கள்</td><td>UPVC</td><td>UPVC</td><td>Vengai Wood</td></tr>
+              <tr><td>Hardwares</td><td>Powder coated</td><td>Powder coated</td><td>Stainless Steel</td></tr>
+              <tr><td>Handrails / கைப்பிடி</td><td>MS</td><td>Stainless Steel</td><td>Stainless Steel</td></tr>
+              <tr><td>Main Gate</td><td>MS</td><td>MS</td><td>SS</td></tr>
+              <tr><td>Tiles / டைல்ஸ்</td><td>₹40/sft</td><td>₹50/sft</td><td>₹60/sft</td></tr>
+              <tr><td>Staircase Floor / மாடி படி</td><td>Vitrified Tiles</td><td>Vitrified Tiles</td><td>Granite</td></tr>
+              <tr><td>Switches / ஸ்விட்ச்கள்</td><td>GM</td><td>Anchor Roma</td><td>Legrand</td></tr>
+              <tr><td>Electric Cables / வயர்கள்</td><td>Kundan / V-Guard</td><td>Finolex</td><td>Hawells</td></tr>
+              <tr><td>Water Pipes / குழாய்கள்</td><td>Star</td><td>Finolex</td><td>Astral / Ashirwad</td></tr>
+              <tr><td>Sanitary Fittings / சானிடரி Fittings</td><td>Parryware</td><td>Jaquar</td><td>Roca</td></tr>
+              <tr><td>Water Closets / கழிவறை பேஷன்</td><td>Parryware</td><td>Parryware</td><td>Jaquar</td></tr>
+              <tr><td>Interior Painting</td><td>Asian Tractor</td><td>Asian Tractor</td><td>Asian Premium</td></tr>
+              <tr><td>Exterior Painting</td><td>Asian Ace</td><td>Asian Ace</td><td>Asian Apex</td></tr>
+              <tr><td>Joinery Painting</td><td>Asian Enamel</td><td>Asian Enamel</td><td>Asian Enamel</td></tr>
+              <tr><td>Anti Termite Treatment</td><td><span class="check-no">✕</span></td><td><span class="check-no">✕</span></td><td><span class="check-yes">✓</span></td></tr>
+              <tr><td>Basement Plastering</td><td><span class="check-no">✕</span></td><td><span class="check-no">✕</span></td><td><span class="check-yes">✓</span></td></tr>
+              <tr><td>Sill Slab</td><td><span class="check-no">✕</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p style="font-size:0.75rem;color:var(--muted);margin-top:12px;text-align:center">Your selected package is highlighted above</p>
+        </div>
+        <div class="client-actions">
+          <button class="client-action-btn action-primary" onclick="window.print()">🖨️ Print / Save PDF</button>
+          <button class="client-action-btn action-wa" onclick="window.open('https://wa.me/918884838995','_blank')">💬 Contact on WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo" style="display:flex;align-items:center;gap:10px"><img src="assets/logo.png" style="height:40px;width:40px;object-fit:contain;border-radius:6px"/><span>Elite Homes</span></div>
+    <div class="footer-contact"><strong>+91 88848 38995</strong> &nbsp;|&nbsp; eliteconstructionstvm@gmail.com &nbsp;|&nbsp; Tiruvannamalai, Tamil Nadu</div>
+  </footer>
+</div>
+
+
+<!-- ===================== PAGE: FALSE CEILING ===================== -->
+<div class="page" id="page-ceiling">
+  <div id="fc-admin-view">
+    <div class="hero">
+      <h1>False Ceiling <em>Quote</em></h1>
+      <p>Add rooms, select materials per room, and generate a detailed false ceiling quotation.</p>
+    </div>
+    <div class="section" style="max-width:900px">
+
+      <!-- Client Details -->
+      <div class="quote-form-card" style="margin-bottom:16px">
+        <div class="section-title" style="font-size:1.1rem;margin-bottom:16px">Client Details</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Client Name</label>
+            <input class="form-input" type="text" id="fc-clientName" placeholder="e.g. Mr. Lokesh" oninput="fcRecalc()"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Location / Project</label>
+            <input class="form-input" type="text" id="fc-location" placeholder="e.g. Vengikkal, Tiruvannamalai" oninput="fcRecalc()"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rooms -->
+      <div id="fc-rooms-container"></div>
+      <button class="fc-add-room-btn" onclick="fcAddRoom()">+ Add Room</button>
+
+      <!-- Global Add-ons -->
+      <div class="fc-global-card">
+        <div class="fc-global-title">Global Add-ons (applied to total area)</div>
+        <!-- CNC Design -->
+        <div class="fc-global-row">
+          <div>
+            <div class="fc-global-label">CNC Design with Light Board Sheet</div>
+            <div style="font-size:0.75rem;color:var(--muted)">₹750 per Rft</div>
+          </div>
+          <input type="checkbox" id="fc-cnc-chk" onchange="fcToggleGlobal('cnc')" style="accent-color:var(--gold);width:18px;height:18px"/>
+          <span class="fc-global-unit">Rft</span>
+          <input class="fq-diff-input" type="number" id="fc-cnc-qty" placeholder="Qty" oninput="fcRecalc()" style="display:none;text-align:center"/>
+        </div>
+        <!-- Putty -->
+        <div class="fc-global-row">
+          <div>
+            <div class="fc-global-label">Putty — 2 coats (Birla Putty)</div>
+            <div style="font-size:0.75rem;color:var(--muted)">₹20 per Sft</div>
+          </div>
+          <input type="checkbox" id="fc-putty-chk" onchange="fcToggleGlobal('putty')" style="accent-color:var(--gold);width:18px;height:18px"/>
+          <span class="fc-global-unit">Auto (total sft)</span>
+          <div style="font-size:0.82rem;color:var(--gold);font-weight:700" id="fc-putty-display">₹0</div>
+        </div>
+        <!-- Primer -->
+        <div class="fc-global-row">
+          <div>
+            <div class="fc-global-label">Primer — 1 coat (Asian Paints)</div>
+            <div style="font-size:0.75rem;color:var(--muted)">₹15 per Sft</div>
+          </div>
+          <input type="checkbox" id="fc-primer-chk" onchange="fcToggleGlobal('primer')" style="accent-color:var(--gold);width:18px;height:18px"/>
+          <span class="fc-global-unit">Auto (total sft)</span>
+          <div style="font-size:0.82rem;color:var(--gold);font-weight:700" id="fc-primer-display">₹0</div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="fc-summary-box">
+        <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:14px;font-weight:700">Quote Summary</div>
+        <div id="fc-summary-rows"></div>
+        <div class="fc-summary-total">
+          <div class="fc-summary-total-label">Total Amount</div>
+          <div class="fc-summary-total-val" id="fc-grand-total">₹0</div>
+        </div>
+      </div>
+
+      <button class="fc-download-btn" onclick="fcDownloadQuote()">📄 Download False Ceiling Quote</button>
+      <button class="fc-download-btn" onclick="showPage('fc-finalize', document.getElementById('nav-fc-finalize'))" style="margin-top:10px;background:rgba(201,168,76,0.12);color:var(--gold);border:1px solid rgba(201,168,76,0.4)">⚙️ Finalize False Ceiling Quote</button>
+
+    </div>
+    <footer>
+      <div class="footer-logo" style="display:flex;align-items:center;gap:10px"><span>Elite Homes</span></div>
+      <div class="footer-contact"><strong>+91 88848 38995</strong> &nbsp;|&nbsp; eliteconstructionstvm@gmail.com</div>
+    </footer>
+    <div style="text-align:center;padding:10px 0 4px;font-size:0.72rem;color:rgba(255,255,255,0.18)">v2.0 — Elite Homes Quote Builder</div>
+  </div>
+</div>
+
+
+<!-- ===================== PAGE: FC FINALIZE ===================== -->
+<div class="page" id="page-fc-finalize">
+  <div class="hero">
+    <h1>Finalize <em>False Ceiling Quote</em></h1>
+    <p>Review rooms, apply deductions, adjust rates, add extras and download the final quote.</p>
+  </div>
+  <div class="section" style="max-width:900px">
+
+    <!-- STEP 1: LOAD -->
+    <div class="fq-section" id="fcfin-load-section">
+      <div class="fq-section-title">📂 Load Quote</div>
+      <div class="fq-section-sub">Upload a downloaded False Ceiling quote HTML, or use current quote from the False Ceiling page.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+        <button class="specs-btn" onclick="fcFinLoadCurrent()" style="flex:1;padding:14px;font-size:0.9rem">
+          ⚡ Use Current Quote
+        </button>
+        <button class="specs-btn" onclick="document.getElementById('fcfin-file-input').click()" style="flex:1;padding:14px;font-size:0.9rem">
+          📂 Upload Quote HTML
+        </button>
+        <input type="file" id="fcfin-file-input" accept=".html" style="display:none" onchange="fcFinLoadFile(event)"/>
+      </div>
+      <div id="fcfin-loaded-info" style="display:none;margin-top:14px;padding:12px 16px;background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.2);border-radius:10px">
+        <strong id="fcfin-client-name">—</strong>
+        <span style="color:var(--muted);font-size:0.82rem;margin-left:10px" id="fcfin-room-count">—</span>
+      </div>
+    </div>
+
+    <!-- STEP 2: ROOMS WITH DEDUCTIONS -->
+    <div id="fcfin-main" style="display:none">
+      <div class="fq-section">
+        <div class="fq-section-title">🏠 Step 2 — Rooms &amp; Deductions</div>
+        <div class="fq-section-sub">Each room shows its gross area. Add deductions (pillar, toilet cutout, etc.) to get net area. Adjust rate per room if needed.</div>
+        <div id="fcfin-room-rows"></div>
+      </div>
+
+      <!-- STEP 3: GLOBAL ADD-ONS REVIEW -->
+      <div class="fq-section">
+        <div class="fq-section-title">🔧 Step 3 — Additional Items</div>
+        <div class="fq-section-sub">Review global add-ons. Add any extra line items below.</div>
+
+        <!-- Global addons from original quote -->
+        <div id="fcfin-globals-rows"></div>
+
+        <!-- Extra line items -->
+        <div style="margin-top:16px">
+          <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:10px">Extra Line Items</div>
+          <table class="fq-extra-table">
+            <thead><tr>
+              <th style="width:40px">S.No</th><th>Description</th>
+              <th style="width:80px">Qty</th><th style="width:70px">Unit</th>
+              <th style="width:100px">Rate</th>
+              <th style="width:100px;text-align:right">Total</th>
+              <th style="width:32px"></th>
+            </tr></thead>
+            <tbody id="fcfin-extra-body"></tbody>
+          </table>
+          <button class="fq-add-row-btn" onclick="fcFinAddExtra()">+ Add Line Item</button>
+        </div>
+      </div>
+
+      <!-- GRAND TOTAL -->
+      <div class="fq-grand-box">
+        <div class="fq-section-title" style="margin-bottom:16px">💰 Grand Total</div>
+        <div id="fcfin-grand-rows"></div>
+        <div class="fq-grand-total">
+          <div class="fq-grand-total-label">Total False Ceiling Cost</div>
+          <div class="fq-grand-total-val" id="fcfin-grand-total">₹0</div>
+        </div>
+      </div>
+
+      <button class="fc-download-btn" onclick="fcFinDownload()">🖨️ Generate &amp; Download Final FC Quote</button>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo" style="display:flex;align-items:center;gap:10px"><span>Elite Homes</span></div>
+    <div class="footer-contact"><strong>+91 88848 38995</strong> &nbsp;|&nbsp; eliteconstructionstvm@gmail.com</div>
+  </footer>
+  <div style="text-align:center;padding:10px 0 4px;font-size:0.72rem;color:rgba(255,255,255,0.18)">v2.0 — Elite Homes Quote Builder</div>
+</div>
+
+<!-- ===================== PAGE 3: PACKAGES ===================== -->
+<div class="page" id="page-packages">
+  <div class="hero">
+    <h1>Construction <em>Packages</em><br/>& Specifications</h1>
+    <p>Transparent pricing, honest material specifications. Choose the package that fits your vision and budget.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Choose Your <em>Package</em></div>
+    <p class="section-sub">All packages include skilled labour, structural drawings, and quality site supervision.</p>
+
+    <div class="pkg-grid">
+      <!-- BASIC -->
+      <div class="pkg-card">
+        <div class="pkg-header">
+          <div class="pkg-name basic">Basic Package</div>
+          <div class="pkg-price">₹2,100 <span class="pkg-price-unit">/ sft</span></div>
+          <div class="pkg-desc">Reliable construction with quality entry-level materials. Ideal for budget-conscious builds without compromising structure.</div>
+        </div>
+        <button class="pkg-cta basic" onclick="selectPackageAndQuote('basic')">Get Quote →</button>
+        <div class="pkg-features">
+          <div class="feature-row"><span class="feature-icon">🏗️</span><div><div class="feature-label">Cement</div><div class="feature-val">Priya / Penna</div></div></div>
+          <div class="feature-row"><span class="feature-icon">⚙️</span><div><div class="feature-label">TMT Steel</div><div class="feature-val">Suryadev / Thirumala</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🏖️</span><div><div class="feature-label">Sand</div><div class="feature-val">M-Sand / P-Sand</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🧱</span><div><div class="feature-label">Bricks</div><div class="feature-val">Fly Ash</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚪</span><div><div class="feature-label">Main Door</div><div class="feature-val">Vengai wood frame with Flush door</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚪</span><div><div class="feature-label">Inner Doors</div><div class="feature-val">Vengai wood frame with Flushdoor</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚪</span><div><div class="feature-label">Exterior Doors</div><div class="feature-val">Vengai Wood Frame with Vengai Shutter</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🪟</span><div><div class="feature-label">Windows</div><div class="feature-val">UPVC</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🔧</span><div><div class="feature-label">Hardwares</div><div class="feature-val">Powder coated</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🪜</span><div><div class="feature-label">Handrails</div><div class="feature-val">MS</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚧</span><div><div class="feature-label">Main Gate</div><div class="feature-val">MS</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🏠</span><div><div class="feature-label">Tiles</div><div class="feature-val">₹40/sft</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🪞</span><div><div class="feature-label">Staircase Floor</div><div class="feature-val">Vitrified Tiles</div></div></div>
+          <div class="feature-row"><span class="feature-icon">💡</span><div><div class="feature-label">Switches</div><div class="feature-val">GM</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🔌</span><div><div class="feature-label">Electric Cables</div><div class="feature-val">Kundan / V-Guard</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚰</span><div><div class="feature-label">Water Pipes</div><div class="feature-val">Star</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚿</span><div><div class="feature-label">Sanitary Fittings</div><div class="feature-val">Parryware</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚽</span><div><div class="feature-label">Water Closets</div><div class="feature-val">Parryware</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🎨</span><div><div class="feature-label">Interior Painting</div><div class="feature-val">Asian Tractor</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🎨</span><div><div class="feature-label">Exterior Painting</div><div class="feature-val">Asian Ace</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🎨</span><div><div class="feature-label">Joinery Painting</div><div class="feature-val">Asian Enamel</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🏚️</span><div><div class="feature-label">Basement Height</div><div class="feature-val">2 ft above GL</div></div></div>
+        </div>
+      </div>
+
+      <!-- STANDARD -->
+      <div class="pkg-card featured">
+        <div class="featured-badge">⭐ MOST POPULAR</div>
+        <div class="pkg-header">
+          <div class="pkg-name standard">Standard Package</div>
+          <div class="pkg-price">₹2,300 <span class="pkg-price-unit">/ sft</span></div>
+          <div class="pkg-desc">The most popular choice — balanced quality, durability and style at a smart price point.</div>
+        </div>
+        <button class="pkg-cta standard" onclick="selectPackageAndQuote('standard')">Get Quote →</button>
+        <div class="pkg-features">
+          <div class="feature-row"><span class="feature-icon">🏗️</span><div><div class="feature-label">Cement</div><div class="feature-val">Ramco / Dalmia</div></div></div>
+          <div class="feature-row"><span class="feature-icon">⚙️</span><div><div class="feature-label">TMT Steel</div><div class="feature-val">Agni</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🏖️</span><div><div class="feature-label">Sand</div><div class="feature-val">M-Sand / P-Sand</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🧱</span><div><div class="feature-label">Bricks</div><div class="feature-val">Red Brick</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚪</span><div><div class="feature-label">Main Door</div><div class="feature-val">Vengai wood frame with Vengai wood shutter</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚪</span><div><div class="feature-label">Inner Doors</div><div class="feature-val">Vengai wood frame with Flushdoor</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚪</span><div><div class="feature-label">Exterior Doors</div><div class="feature-val">Vengai Wood Frame with Vengai Shutter</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🪟</span><div><div class="feature-label">Windows</div><div class="feature-val">UPVC</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🔧</span><div><div class="feature-label">Hardwares</div><div class="feature-val">Powder coated</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🪜</span><div><div class="feature-label">Handrails</div><div class="feature-val">Stainless Steel</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚧</span><div><div class="feature-label">Main Gate</div><div class="feature-val">MS</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🏠</span><div><div class="feature-label">Tiles</div><div class="feature-val">₹50/sft</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🪞</span><div><div class="feature-label">Staircase Floor</div><div class="feature-val">Vitrified Tiles</div></div></div>
+          <div class="feature-row"><span class="feature-icon">💡</span><div><div class="feature-label">Switches</div><div class="feature-val">Anchor Roma</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🔌</span><div><div class="feature-label">Electric Cables</div><div class="feature-val">Finolex</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚰</span><div><div class="feature-label">Water Pipes</div><div class="feature-val">Finolex</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚿</span><div><div class="feature-label">Sanitary Fittings</div><div class="feature-val">Jaquar</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚽</span><div><div class="feature-label">Water Closets</div><div class="feature-val">Parryware</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🎨</span><div><div class="feature-label">Interior Painting</div><div class="feature-val">Asian Tractor</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🎨</span><div><div class="feature-label">Exterior Painting</div><div class="feature-val">Asian Ace</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🎨</span><div><div class="feature-label">Joinery Painting</div><div class="feature-val">Asian Enamel</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🏚️</span><div><div class="feature-label">Basement Height</div><div class="feature-val">3 ft above GL</div></div></div>
+        </div>
+      </div>
+
+      <!-- PREMIUM -->
+      <div class="pkg-card">
+        <div class="pkg-header">
+          <div class="pkg-name premium">Premium Package</div>
+          <div class="pkg-price">₹2,550 <span class="pkg-price-unit">/ sft</span></div>
+          <div class="pkg-desc">Top-tier materials and finishes for a home that stands out — built to last with the finest craftsmanship.</div>
+        </div>
+        <button class="pkg-cta premium" onclick="selectPackageAndQuote('premium')">Get Quote →</button>
+        <div class="pkg-features">
+          <div class="feature-row"><span class="feature-icon">🏗️</span><div><div class="feature-label">Cement</div><div class="feature-val">Ultratech</div></div></div>
+          <div class="feature-row"><span class="feature-icon">⚙️</span><div><div class="feature-label">TMT Steel</div><div class="feature-val">TATA TMT</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🏖️</span><div><div class="feature-label">Sand</div><div class="feature-val">M-Sand / P-Sand</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🧱</span><div><div class="feature-label">Bricks</div><div class="feature-val">Wire-cut Red Brick</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚪</span><div><div class="feature-label">Main Door</div><div class="feature-val">African Teak wood frame with African Teak wood shutter</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚪</span><div><div class="feature-label">Inner Doors</div><div class="feature-val">Vengai wood frame with Flushdoor (ISI make)</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚪</span><div><div class="feature-label">Exterior Doors</div><div class="feature-val">Vengai Wood Frame with Vengai Shutter</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🪟</span><div><div class="feature-label">Windows</div><div class="feature-val">Vengai Wood</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🔧</span><div><div class="feature-label">Hardwares</div><div class="feature-val">Stainless Steel</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🪜</span><div><div class="feature-label">Handrails</div><div class="feature-val">Stainless Steel</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚧</span><div><div class="feature-label">Main Gate</div><div class="feature-val">SS</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🏠</span><div><div class="feature-label">Tiles</div><div class="feature-val">₹60/sft</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🪞</span><div><div class="feature-label">Staircase Floor</div><div class="feature-val">Granite</div></div></div>
+          <div class="feature-row"><span class="feature-icon">💡</span><div><div class="feature-label">Switches</div><div class="feature-val">Legrand</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🔌</span><div><div class="feature-label">Electric Cables</div><div class="feature-val">Hawells</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚰</span><div><div class="feature-label">Water Pipes</div><div class="feature-val">Astral / Ashirwad</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚿</span><div><div class="feature-label">Sanitary Fittings</div><div class="feature-val">Roca</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🚽</span><div><div class="feature-label">Water Closets</div><div class="feature-val">Jaquar</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🎨</span><div><div class="feature-label">Interior Painting</div><div class="feature-val">Asian Premium</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🎨</span><div><div class="feature-label">Exterior Painting</div><div class="feature-val">Asian Apex</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🎨</span><div><div class="feature-label">Joinery Painting</div><div class="feature-val">Asian Enamel</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🏚️</span><div><div class="feature-label">Basement Height</div><div class="feature-val">3 ft above GL</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🐛</span><div><div class="feature-label">Anti Termite Treatment</div><div class="feature-val">Included</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🧱</span><div><div class="feature-label">Basement Plastering</div><div class="feature-val">Included</div></div></div>
+          <div class="feature-row"><span class="feature-icon">🪵</span><div><div class="feature-label">Sill Slab</div><div class="feature-val">Included</div></div></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- COMPARISON TABLE -->
+    <div class="compare-section">
+      <div class="compare-title">Full Specification Comparison</div>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th class="th-basic">Basic</th>
+            <th class="th-standard">Standard</th>
+            <th class="th-premium">Premium</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Rate / SFT</td><td>₹2,100</td><td>₹2,300</td><td>₹2,550</td></tr>
+          <tr><td>Basement Height</td><td>2 ft above GL</td><td>3 ft above GL</td><td>3 ft above GL</td></tr>
+          <tr><td>Cement</td><td>Priya / Penna</td><td>Ramco / Dalmia</td><td>Ultratech</td></tr>
+          <tr><td>TMT Steel</td><td>Suryadev / Thirumala</td><td>Agni</td><td>TATA TMT</td></tr>
+          <tr><td>Sand</td><td>M-Sand / P-Sand</td><td>M-Sand / P-Sand</td><td>M-Sand / P-Sand</td></tr>
+          <tr><td>Bricks</td><td>Fly Ash</td><td>Red Brick</td><td>Wire-cut Red Brick</td></tr>
+          <tr><td>Main Door</td><td>Vengai wood frame with Flush door</td><td>Vengai wood frame with Vengai wood shutter</td><td>African Teak wood frame with African Teak wood shutter</td></tr>
+          <tr><td>Inner Doors</td><td>Vengai wood frame with Flushdoor</td><td>Vengai wood frame with Flushdoor</td><td>Vengai wood frame with Flushdoor (ISI make)</td></tr>
+          <tr><td>Exterior Doors</td><td>Vengai Wood Frame with Vengai Shutter</td><td>Vengai Wood Frame with Vengai Shutter</td><td>Vengai Wood Frame with Vengai Shutter</td></tr>
+          <tr><td>Windows</td><td>UPVC</td><td>UPVC</td><td>Vengai Wood</td></tr>
+          <tr><td>Hardwares</td><td>Powder coated</td><td>Powder coated</td><td>Stainless Steel</td></tr>
+          <tr><td>Handrails</td><td>MS</td><td>Stainless Steel</td><td>Stainless Steel</td></tr>
+          <tr><td>Main Gate</td><td>MS</td><td>MS</td><td>SS</td></tr>
+          <tr><td>Tiles</td><td>₹40/sft</td><td>₹50/sft</td><td>₹60/sft</td></tr>
+          <tr><td>Staircase Floor</td><td>Vitrified Tiles</td><td>Vitrified Tiles</td><td>Granite</td></tr>
+          <tr><td>Switches</td><td>GM</td><td>Anchor Roma</td><td>Legrand</td></tr>
+          <tr><td>Electric Cables</td><td>Kundan / V-Guard</td><td>Finolex</td><td>Hawells</td></tr>
+          <tr><td>Water Pipes</td><td>Star</td><td>Finolex</td><td>Astral / Ashirwad</td></tr>
+          <tr><td>Sanitary Fittings</td><td>Parryware</td><td>Jaquar</td><td>Roca</td></tr>
+          <tr><td>Water Closets</td><td>Parryware</td><td>Parryware</td><td>Jaquar</td></tr>
+          <tr><td>Interior Painting</td><td>Asian Tractor</td><td>Asian Tractor</td><td>Asian Premium</td></tr>
+          <tr><td>Exterior Painting</td><td>Asian Ace</td><td>Asian Ace</td><td>Asian Apex</td></tr>
+          <tr><td>Joinery Painting</td><td>Asian Enamel</td><td>Asian Enamel</td><td>Asian Enamel</td></tr>
+          <tr><td>Anti Termite Treatment</td><td><span class="check-no">✕</span></td><td><span class="check-no">✕</span></td><td><span class="check-yes">✓</span></td></tr>
+          <tr><td>Basement Plastering</td><td><span class="check-no">✕</span></td><td><span class="check-no">✕</span></td><td><span class="check-yes">✓</span></td></tr>
+          <tr><td>Sill Slab</td><td><span class="check-no">✕</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo" style="display:flex;align-items:center;gap:10px"><img src="assets/logo.png" style="height:40px;width:40px;object-fit:contain;border-radius:6px"/><span>Elite Homes</span></div>
+    <div class="footer-contact">
+      <strong>+91 88848 38995</strong> &nbsp;|&nbsp; eliteconstructionstvm@gmail.com
+    </div>
+  </footer>
+</div>
+
+<!-- ===================== PAGE 4: TERMS ===================== -->
+<div class="page" id="page-terms">
+  <div class="hero">
+    <h1>Terms &amp; <em>Conditions</em></h1>
+    <p>Please read these terms carefully before commencing any construction project with Elite Homes.</p>
+  </div>
+
+  <div class="section">
+    <div class="terms-layout">
+
+      <div class="terms-section">
+        <h3>📋 1. Quotation & Agreement</h3>
+        <ul>
+          <li>All quotations are valid for <strong>30 days</strong> from the date of issue.</li>
+          <li>A formal agreement must be signed before commencement of any work.</li>
+          <li>The quoted rate is based on the selected package specifications. Any deviation from the standard specifications will attract additional costs.</li>
+          <li>Rates are subject to change based on prevailing market prices of materials at the time of procurement.</li>
+        </ul>
+      </div>
+
+      <div class="terms-section">
+        <h3>💰 2. Payment Schedule</h3>
+        <ul>
+          <li><strong>Advance:</strong> 15% before commencement</li>
+          <li><strong>Basement Level:</strong> 10%</li>
+          <li><strong>Ground Floor Roof Level:</strong> 15%</li>
+          <li><strong>First Floor Roof Level:</strong> 20%</li>
+          <li><strong>Second Floor Roof Level:</strong> 20%</li>
+          <li><strong>After Flooring:</strong> 15%</li>
+          <li><strong>Balance:</strong> After completion</li>
+          <li><strong>Extra Work Payments:</strong> To be made as and when completed</li>
+        </ul>
+      </div>
+
+      <div class="terms-section">
+        <h3>🏗️ 3. Scope of Work</h3>
+        <ul>
+          <li>The scope covers structural work, brickwork, plastering, flooring, electrical, plumbing, painting, and door/window installation as per the chosen package.</li>
+          <li>The following are <strong>NOT included</strong> unless specifically agreed: compound wall, landscaping, borewell, overhead water tank, modular kitchen, false ceiling, and interior decorative work.</li>
+          <li>All work will be carried out as per the approved structural drawings and local municipal bye-laws.</li>
+        </ul>
+      </div>
+
+      <div class="terms-section">
+        <h3>📦 4. Materials</h3>
+        <ul>
+          <li>All materials will be as per the specifications listed in the chosen package. Substitutions will only be made with client approval.</li>
+          <li>The client has the right to inspect materials before use on site.</li>
+          <li>If the client opts for materials of higher grade, the cost difference will be borne by the client.</li>
+          <li>Sand availability and type (M-Sand / P-Sand) may vary based on local supply.</li>
+        </ul>
+      </div>
+
+      <div class="terms-section">
+        <h3>📅 5. Project Timeline</h3>
+        <ul>
+          <li>The project timeline will be agreed upon at the time of signing the contract.</li>
+          <li>Delays caused by <strong>client-side decisions</strong> (material upgrades, design changes, delayed payments) will not be counted in the contractor's timeline.</li>
+          <li>Force majeure events (floods, government restrictions, material scarcity) may extend the timeline without penalty.</li>
+          <li>A detailed project schedule will be provided within 7 days of commencement.</li>
+        </ul>
+      </div>
+
+      <div class="terms-section">
+        <h3>🛡️ 6. Warranty & Defect Liability</h3>
+        <ul>
+          <li>A <strong>12-month defect liability period</strong> is provided from the date of possession for structural defects.</li>
+          <li>Plumbing and electrical issues arising from workmanship (not wear and tear) are covered for 6 months.</li>
+          <li>Warranty does not cover damage caused by misuse, natural disasters, or modifications made by the client after possession.</li>
+        </ul>
+      </div>
+
+      <div class="terms-section">
+        <h3>📜 7. Permits & Approvals</h3>
+        <ul>
+          <li>The client is responsible for obtaining all necessary <strong>building plan approvals</strong> from the local authority (CMDA / DTCP / Panchayat).</li>
+          <li>The contractor will assist in preparing required documentation for plan approval upon request (additional charges apply).</li>
+          <li>Any compounding fees or penalties due to deviations from the approved plan that are client-directed will be borne by the client.</li>
+        </ul>
+      </div>
+
+      <div class="terms-section">
+        <h3>⚖️ 8. Dispute Resolution</h3>
+        <ul>
+          <li>Any disputes arising from this contract will first be addressed through mutual discussion.</li>
+          <li>If unresolved, matters will be referred to arbitration under the Arbitration and Conciliation Act, 1996.</li>
+          <li>Jurisdiction for all legal matters will be the courts of <strong>Tiruvannamalai, Tamil Nadu</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="terms-section">
+        <h3>📞 9. Contact & Communication</h3>
+        <ul>
+          <li>All formal communications must be in writing (email or signed letter).</li>
+          <li>Site-level instructions given to workers without the contractor's knowledge will not be the contractor's responsibility.</li>
+          <li>The client must designate one point of contact for all project-related decisions.</li>
+        </ul>
+      </div>
+
+    </div>
+    <div class="terms-last-updated">Last updated: January 2026 &nbsp;|&nbsp; Elite Homes &nbsp;|&nbsp; Tiruvannamalai, Tamil Nadu</div>
+  </div>
+
+  <footer>
+    <div class="footer-logo" style="display:flex;align-items:center;gap:10px"><img src="assets/logo.png" style="height:40px;width:40px;object-fit:contain;border-radius:6px"/><span>Elite Homes</span></div>
+    <div class="footer-contact">
+      <strong>+91 88848 38995</strong> &nbsp;|&nbsp; eliteconstructionstvm@gmail.com
+    </div>
+  </footer>
+  <div style="text-align:center;padding:10px 0 4px;font-size:0.72rem;color:rgba(255,255,255,0.18);letter-spacing:0.5px">v2.0 — Elite Homes Quote Builder</div>
+</div>
+
+<!-- ===================== PAGE 5: FINALIZE QUOTE ===================== -->
+<div class="page" id="page-finalize">
+  <div class="hero">
+    <h1>Finalize <em>Quote</em></h1>
+    <p>Upload a generated quote, review each section, adjust prices and specifications, then produce the final quote for your client.</p>
+  </div>
+  <div class="section" style="max-width:900px">
+    <div class="fq-section" id="fq-step-upload">
+      <div class="fq-section-title">📂 Step 1 — Upload Generated Quote</div>
+      <div class="fq-section-sub">Upload the HTML quote file you downloaded from the Get a Quote page</div>
+      <div class="fq-upload-zone" id="fqUploadZone" onclick="document.getElementById('fqFileInput').click()" ondragover="event.preventDefault()" ondrop="handleFQDrop(event)">
+        <div class="icon">📄</div>
+        <strong>Click to upload or drag &amp; drop</strong>
+        <p>Quote_ClientName.html — the file downloaded from Get a Quote</p>
+      </div>
+      <input type="file" id="fqFileInput" accept=".html" style="display:none" onchange="loadFQFile(event)"/>
+    </div>
+    <div id="fq-main" style="display:none">
+      <div class="fq-section">
+        <div class="fq-section-title">📦 Package Tier</div>
+        <div class="fq-section-sub">Change the package tier — floor rates and specifications update automatically.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap" id="fqTierBtns">
+          <button onclick="switchFQTier('basic')"    id="fq-tier-basic"    class="fq-tier-btn">Basic<br/><small>₹2,100/sft</small></button>
+          <button onclick="switchFQTier('standard')" id="fq-tier-standard" class="fq-tier-btn">Standard<br/><small>₹2,300/sft</small></button>
+          <button onclick="switchFQTier('premium')"  id="fq-tier-premium"  class="fq-tier-btn">Premium<br/><small>₹2,550/sft</small></button>
+        </div>
+      </div>
+      <div class="fq-section">
+        <div class="fq-section-title">🏗️ Step 2 — Floor-wise Pricing</div>
+        <div class="fq-section-sub">Adjust the rate or fixed amount for each floor. Total recalculates automatically.</div>
+        <div style="display:grid;grid-template-columns:1fr 120px 120px 100px;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:4px">
+          <span style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted)">Floor</span>
+          <span style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted)">Area (sft)</span>
+          <span style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted)">Rate (₹/sft)</span>
+          <span style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);text-align:right">Amount</span>
+        </div>
+        <div id="fqFloorRows"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--border);margin-top:4px">
+          <span style="font-size:0.88rem;font-weight:700">Total Construction Cost</span>
+          <span style="font-size:1.1rem;font-weight:800;color:var(--gold)" id="fqConstructionTotal">₹0</span>
+        </div>
+      </div>
+      <div class="fq-section">
+        <div class="fq-section-title">📋 Step 3 — Confirm Specifications</div>
+        <div class="fq-section-sub">Each item defaults to your selected package (marked ✦). Switch to another tier's product — the choice is recorded and you can update the project cost manually.</div>
+        <div id="fqSpecRows"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--border);margin-top:8px">
+          <span style="font-size:0.88rem;font-weight:700">Spec Changes</span>
+          <span style="font-size:0.88rem;color:var(--muted)" id="fqSpecAdjTotal">Recorded only — update cost in floor pricing</span>
+        </div>
+      </div>
+      <div class="fq-section">
+        <div class="fq-section-title">➕ Step 4 — Additional Line Items</div>
+        <div class="fq-section-sub">Add any extra works, materials or services not covered in the package.</div>
+        <table class="fq-extra-table">
+          <thead><tr>
+            <th style="width:40px">S.No</th><th>Description</th>
+            <th style="width:90px">Qty</th><th style="width:80px">Unit</th>
+            <th style="width:110px">Unit Price</th>
+            <th style="width:110px;text-align:right">Total</th>
+            <th style="width:36px"></th>
+          </tr></thead>
+          <tbody id="fqExtraBody"></tbody>
+        </table>
+        <button class="fq-add-row-btn" onclick="addExtraRow()">+ Add Line Item</button>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--border);margin-top:14px">
+          <span style="font-size:0.88rem;font-weight:700">Total Additional Works</span>
+          <span style="font-size:1.1rem;font-weight:800;color:var(--gold)" id="fqExtraTotal">₹0</span>
+        </div>
+      </div>
+      <div class="fq-grand-box">
+        <div class="fq-section-title" style="margin-bottom:16px">💰 Grand Total Summary</div>
+        <div class="fq-grand-rows" id="fqGrandRows"></div>
+        <div class="fq-grand-total">
+          <div class="fq-grand-total-label">Final Project Cost</div>
+          <div class="fq-grand-total-val" id="fqGrandTotal">₹0</div>
+        </div>
+      </div>
+      <button class="fq-finalize-btn" onclick="generateFinalQuote()">🖨️ Generate &amp; Download Final Quote</button>
+      <button class="fq-finalize-btn" onclick="generateWorkOrder()" style="margin-top:10px;background:rgba(201,168,76,0.1);color:var(--gold);border:1px solid rgba(201,168,76,0.4)">📋 Download Work Order</button>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo" style="display:flex;align-items:center;gap:10px"><span>Elite Homes</span></div>
+    <div class="footer-contact"><strong>+91 88848 38995</strong> &nbsp;|&nbsp; eliteconstructionstvm@gmail.com</div>
+  </footer>
+  <div style="text-align:center;padding:10px 0 4px;font-size:0.72rem;color:rgba(255,255,255,0.18);letter-spacing:0.5px">v2.0 — Elite Homes Quote Builder</div>
+</div>
+
+<!-- SETUP WIZARD (first launch) -->
+<div class="setup-wizard-overlay" id="setupWizard" style="display:none">
+  <div class="setup-wizard">
+    <h2>👋 Welcome!</h2>
+    <p>Set up your company details once — they'll appear on all quotes, the website header, and footer.</p>
+    <div class="setup-wizard-logo" id="setupLogoBox" onclick="document.getElementById('setupLogoFile').click()">
+      <img id="setupLogoPreview" src="" style="display:none;width:100%;height:100%;object-fit:contain"/>
+      <span id="setupLogoPlaceholder" style="font-size:2rem">🏢</span>
+    </div>
+    <input type="file" id="setupLogoFile" accept="image/*" style="display:none" onchange="handleSetupLogo(event)"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group" style="grid-column:1/-1"><label class="form-label">Company Name</label><input class="form-input" type="text" id="setup-company" placeholder="e.g. Elite Homes"/></div>
+      <div class="form-group" style="grid-column:1/-1"><label class="form-label">Tagline</label><input class="form-input" type="text" id="setup-tagline" placeholder="e.g. Property Promotors"/></div>
+      <div class="form-group"><label class="form-label">Phone / WhatsApp</label><input class="form-input" type="tel" id="setup-phone" placeholder="+91 98765 43210"/></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="setup-email" placeholder="you@example.com"/></div>
+      <div class="form-group" style="grid-column:1/-1"><label class="form-label">City / Location</label><input class="form-input" type="text" id="setup-city" placeholder="e.g. Tiruvannamalai, Tamil Nadu"/></div>
+    </div>
+    <button class="setup-start-btn" onclick="saveSetup()">Save &amp; Start Using →</button>
+    <span class="setup-skip" onclick="skipSetup()">Skip for now, I'll set up later</span>
+  </div>
+</div>
+
+<!-- ADMIN TRIGGER BUTTON -->
+<button class="admin-trigger" title="Admin Panel" onclick="openAdmin()">⚙️</button>
+
+<!-- ADMIN OVERLAY -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-lock-screen" id="adminLock">
+    <h2>Admin Access</h2>
+    <p>Enter your PIN to manage project listings</p>
+    <input class="admin-pin-input" type="password" id="adminPin" placeholder="Enter PIN" maxlength="6" onkeydown="if(event.key==='Enter')checkPin()"/>
+    <button class="admin-pin-btn" onclick="checkPin()">Unlock</button>
+    <div class="pin-error" id="pinError" style="display:none">Incorrect PIN. Try again.</div>
+  </div>
+  <div id="adminPanel" style="display:none">
+    <div class="admin-panel-header">
+      <h2>⚙️ Admin Panel</h2>
+      <button class="admin-close" onclick="closeAdmin()">✕</button>
+    </div>
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchAdminTab('projects',this)" id="tab-projects">📁 Projects</button>
+      <button class="admin-tab" onclick="switchAdminTab('settings',this)" id="tab-settings">⚙️ Settings</button>
+    </div>
+    <div class="admin-body">
+      <div class="admin-tab-content active" id="admintab-projects">
+        <div class="admin-projects-list" id="adminProjectsList"></div>
+        <div class="admin-add-form">
+          <h3 id="addFormTitle">Add New Project</h3>
+          <input type="hidden" id="editingIndex" value="-1"/>
+          <div class="admin-form-grid">
+            <div class="form-group"><label class="form-label">Project Name</label><input class="form-input" type="text" id="ap-name" placeholder="e.g. Lakshmi Residency, Tiruvannamalai"/></div>
+            <div class="form-group"><label class="form-label">Description</label><input class="form-input" type="text" id="ap-desc" placeholder="Brief description of the project"/></div>
+            <div class="form-group"><label class="form-label">Built Area (sft)</label><input class="form-input" type="number" id="ap-area" placeholder="e.g. 1500"/></div>
+            <div class="form-group"><label class="form-label">Project Value</label><input class="form-input" type="text" id="ap-value" placeholder="e.g. ₹32L"/></div>
+            <div class="form-group"><label class="form-label">Year Completed</label><input class="form-input" type="number" id="ap-year" placeholder="2024"/></div>
+            <div class="form-group"><label class="form-label">Project Type</label><select class="form-select" id="ap-type"><option>Residential</option><option>Commercial</option></select></div>
+            <div class="form-group"><label class="form-label">Package</label><select class="form-select" id="ap-pkg"><option value="basic">Basic</option><option value="standard">Standard</option><option value="premium">Premium</option></select></div>
+            <div class="form-group"><label class="form-label">Tags (comma separated)</label><input class="form-input" type="text" id="ap-tags" placeholder="e.g. 3BHK, G+1, Teak Doors"/></div>
+          </div>
+          <div class="form-group" style="margin-top:12px;grid-column:1/-1">
+            <label class="form-label">Project Photos <span style="color:var(--muted);font-weight:400">(up to 6)</span></label>
+            <div class="photo-upload-grid" id="photoUploadGrid"></div>
+            <input type="file" id="ap-img-file" accept="image/*" multiple style="display:none" onchange="handleMultiImgUpload(event)"/>
+            <input type="hidden" id="ap-img-data" value="[]"/>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="form-btn" onclick="saveProject()" style="flex:1">Save Project</button>
+            <button id="cancelEditBtn" style="display:none;padding:10px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="cancelEdit()">Cancel Edit</button>
+          </div>
+        </div>
+      </div>
+      <div class="admin-tab-content" id="admintab-settings">
+        <div style="padding:24px">
+          <div class="settings-grid">
+            <div class="settings-section-title">🏢 Company Branding</div>
+            <div class="settings-logo-upload" style="grid-column:1/-1">
+              <div class="settings-logo-preview" id="settingsLogoPreview">
+                <img id="settingsLogoImg" src="" style="display:none;width:100%;height:100%;object-fit:contain"/>
+                <span id="settingsLogoPlaceholder" style="font-size:2rem;color:var(--muted)">🏢</span>
+              </div>
+              <div>
+                <div style="font-size:0.88rem;font-weight:600;margin-bottom:6px">Company Logo</div>
+                <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px">Appears in nav, footer and all quotes</div>
+                <button onclick="document.getElementById('settingsLogoFile').click()" style="padding:8px 16px;border-radius:8px;border:1px solid rgba(201,168,76,0.4);background:rgba(201,168,76,0.08);color:var(--gold);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem">Upload Logo</button>
+                <input type="file" id="settingsLogoFile" accept="image/*" style="display:none" onchange="handleSettingsLogo(event)"/>
+              </div>
+            </div>
+            <div class="form-group"><label class="form-label">Company Name</label><input class="form-input" type="text" id="cfg-company" placeholder="e.g. Elite Homes"/></div>
+            <div class="form-group"><label class="form-label">Tagline</label><input class="form-input" type="text" id="cfg-tagline" placeholder="e.g. Property Promotors"/></div>
+            <div class="form-group"><label class="form-label">Phone / WhatsApp</label><input class="form-input" type="tel" id="cfg-phone" placeholder="+91 98765 43210"/></div>
+            <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="cfg-email" placeholder="you@example.com"/></div>
+            <div class="form-group" style="grid-column:1/-1"><label class="form-label">City / Location</label><input class="form-input" type="text" id="cfg-city" placeholder="e.g. Tiruvannamalai, Tamil Nadu"/></div>
+            <div class="settings-section-title" style="margin-top:8px">📝 General Specifications &amp; Terms</div>
+            <div style="grid-column:1/-1">
+              <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">Download as a text file, edit in any editor, then upload back.</p>
+              <div class="specs-editor-tabs">
+                <button class="specs-editor-tab active" onclick="switchSpecsTab('specs',this)">General Specs</button>
+                <button class="specs-editor-tab" onclick="switchSpecsTab('terms',this)">Terms &amp; Conditions</button>
+              </div>
+              <div class="specs-editor-content active" id="specsed-specs">
+                <div class="specs-action-row">
+                  <button class="specs-btn" onclick="downloadSpecsText('specs')">⬇️ Download .txt</button>
+                  <button class="specs-btn" onclick="document.getElementById('specsUploadFile').click()">⬆️ Upload .txt</button>
+                  <button class="specs-btn danger" onclick="resetSpecs('specs')">↺ Reset</button>
+                  <input type="file" id="specsUploadFile" accept=".txt" style="display:none" onchange="uploadSpecsText(event,'specs')"/>
+                </div>
+                <textarea class="specs-textarea" id="specsed-textarea-specs"></textarea>
+                <div class="specs-action-row"><button class="specs-btn" onclick="saveSpecsText('specs')">💾 Save</button><span class="specs-saved" id="specs-saved-msg">✅ Saved!</span></div>
+              </div>
+              <div class="specs-editor-content" id="specsed-terms">
+                <div class="specs-action-row">
+                  <button class="specs-btn" onclick="downloadSpecsText('terms')">⬇️ Download .txt</button>
+                  <button class="specs-btn" onclick="document.getElementById('termsUploadFile').click()">⬆️ Upload .txt</button>
+                  <button class="specs-btn danger" onclick="resetSpecs('terms')">↺ Reset</button>
+                  <input type="file" id="termsUploadFile" accept=".txt" style="display:none" onchange="uploadSpecsText(event,'terms')"/>
+                </div>
+                <textarea class="specs-textarea" id="specsed-textarea-terms"></textarea>
+                <div class="specs-action-row"><button class="specs-btn" onclick="saveSpecsText('terms')">💾 Save</button><span class="specs-saved" id="terms-saved-msg">✅ Saved!</span></div>
+              </div>
+            </div>
+            <div class="settings-section-title" style="margin-top:8px">🔐 Change PIN</div>
+            <div class="form-group"><label class="form-label">Current PIN</label><input class="form-input" type="password" id="cfg-pin-current" placeholder="Enter current PIN"/></div>
+            <div class="form-group"><label class="form-label">New PIN</label><input class="form-input" type="password" id="cfg-pin-new" placeholder="Enter new PIN"/></div>
+            <div id="cfg-pin-error" style="display:none;color:#ff6060;font-size:0.82rem;grid-column:1/-1">❌ Current PIN incorrect</div>
+            <button class="settings-save-btn" onclick="saveSettings()">💾 Save Settings</button>
+            <div class="settings-saved-msg" id="settingsSavedMsg">✅ Settings saved!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<script src="js/app.js"></script>
+</body>
+</html>
