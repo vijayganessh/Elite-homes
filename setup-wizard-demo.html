@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Setup Wizard — Elite Homes SaaS</title>
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #ddc06e;
+    --card: #1a1a1a;
+    --bg: #0d0d0d;
+    --muted: #999;
+    --text: #f0f0f0;
+    --border: rgba(201,168,76,0.3);
+  }
+  body {
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    min-height: 100vh;
+  }
+  .setup-wizard-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+    z-index: 9999; display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .setup-wizard {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 32px 28px; max-width: 520px; width: 100%;
+    max-height: 92vh; overflow-y: auto;
+  }
+  .setup-wizard h2 {
+    font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--gold);
+    margin: 0 0 6px;
+  }
+  .setup-wizard p.sub { font-size: 0.85rem; color: var(--muted); margin: 0 0 24px; }
+
+  /* Step progress dots */
+  .wizard-steps {
+    display: flex; gap: 6px; margin-bottom: 24px;
+  }
+  .wizard-step-dot {
+    flex: 1; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1);
+    transition: background 0.3s;
+  }
+  .wizard-step-dot.active { background: var(--gold); }
+  .wizard-step-dot.done { background: rgba(201,168,76,0.5); }
+
+  .wizard-panel { display: none; }
+  .wizard-panel.active { display: block; }
+
+  .form-group { margin-bottom: 14px; }
+  .form-label {
+    display: block; font-size: 0.8rem; font-weight: 600; color: var(--muted);
+    margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .form-input, .form-textarea {
+    width: 100%; padding: 12px 14px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04);
+    color: var(--text); font-size: 0.95rem; font-family: inherit;
+  }
+  .form-input:focus, .form-textarea:focus {
+    outline: none; border-color: var(--gold);
+  }
+  .form-textarea { min-height: 140px; resize: vertical; line-height: 1.5; }
+
+  .setup-wizard-logo {
+    width: 76px; height: 76px; border-radius: 12px; object-fit: contain;
+    background: rgba(255,255,255,0.05); border: 2px dashed var(--border);
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    margin-bottom: 18px; overflow: hidden;
+  }
+  .setup-wizard-logo:hover { border-color: var(--gold); }
+
+  .pkg-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .pkg-card {
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px;
+    background: rgba(255,255,255,0.03);
+  }
+  .pkg-card.basic { border-top: 3px solid #8a8a8a; }
+  .pkg-card.standard { border-top: 3px solid var(--gold); }
+  .pkg-card.premium { border-top: 3px solid #d4af37; }
+  .pkg-card-title { font-weight: 700; font-size: 0.85rem; margin-bottom: 8px; }
+  .pkg-card .form-label { font-size: 0.65rem; margin-bottom: 4px; }
+  .pkg-card .form-input { padding: 8px 10px; font-size: 0.85rem; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .wizard-nav { display: flex; gap: 10px; margin-top: 24px; }
+  .btn {
+    flex: 1; padding: 14px; border-radius: 12px; border: none;
+    font-family: inherit; font-size: 0.95rem; font-weight: 800; cursor: pointer;
+    transition: background 0.2s, opacity 0.2s;
+  }
+  .btn-primary { background: var(--gold); color: #000; }
+  .btn-primary:hover { background: var(--gold-light); }
+  .btn-secondary {
+    background: transparent; color: var(--muted); border: 1px solid rgba(255,255,255,0.15);
+    flex: 0 0 100px;
+  }
+  .btn-secondary:hover { color: var(--text); border-color: var(--muted); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .setup-skip {
+    display: block; text-align: center; margin-top: 14px; font-size: 0.8rem;
+    color: var(--muted); cursor: pointer; text-decoration: underline;
+  }
+
+  .status-msg {
+    margin-top: 14px; padding: 10px 12px; border-radius: 8px; font-size: 0.85rem;
+    display: none;
+  }
+  .status-msg.show { display: block; }
+  .status-msg.error { background: rgba(239,68,68,0.1); border: 1px solid #ef4444; color: #fca5a5; }
+  .status-msg.success { background: rgba(16,185,129,0.1); border: 1px solid #10b981; color: #6ee7b7; }
+
+  .done-icon { font-size: 3rem; text-align: center; margin-bottom: 12px; }
+  .done-summary {
+    background: rgba(255,255,255,0.04); border-radius: 12px; padding: 14px;
+    font-size: 0.85rem; color: var(--muted); margin: 16px 0;
+  }
+  .done-summary div { margin-bottom: 6px; }
+  .done-summary strong { color: var(--text); }
+
+  .login-screen {
+    max-width: 380px; margin: 80px auto; padding: 0 20px;
+  }
+  .login-screen h2 { font-family: 'Playfair Display', serif; color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- Simple login gate so this demo page is self-contained -->
+<div id="loginScreen" class="login-screen">
+  <h2>🏗️ Sign in to continue</h2>
+  <div class="form-group">
+    <label class="form-label">Email</label>
+    <input class="form-input" type="email" id="login-email" placeholder="you@example.com">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Password</label>
+    <input class="form-input" type="password" id="login-password" placeholder="password">
+  </div>
+  <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Sign In</button>
+  <div id="loginStatus" class="status-msg"></div>
+</div>
+
+<!-- Setup Wizard -->
+<div class="setup-wizard-overlay" id="setupWizard" style="display:none">
+  <div class="setup-wizard">
+
+    <div class="wizard-steps">
+      <div class="wizard-step-dot" data-step="1"></div>
+      <div class="wizard-step-dot" data-step="2"></div>
+      <div class="wizard-step-dot" data-step="3"></div>
+      <div class="wizard-step-dot" data-step="4"></div>
+    </div>
+
+    <!-- STEP 1: Branding -->
+    <div class="wizard-panel" data-panel="1">
+      <h2>👋 Welcome!</h2>
+      <p class="sub">Let's set up your company. This appears on every quote, work order, and the client-facing pages.</p>
+
+      <div class="setup-wizard-logo" id="setupLogoBox" onclick="document.getElementById('setupLogoFile').click()">
+        <img id="setupLogoPreview" src="" style="display:none;width:100%;height:100%;object-fit:contain">
+        <span id="setupLogoPlaceholder" style="font-size:1.8rem">🏢</span>
+      </div>
+      <input type="file" id="setupLogoFile" accept="image/*" style="display:none">
+
+      <div class="form-group">
+        <label class="form-label">Company Name *</label>
+        <input class="form-input" type="text" id="setup-company" placeholder="e.g. Elite Homes">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tagline</label>
+        <input class="form-input" type="text" id="setup-tagline" placeholder="e.g. Property Promotors">
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Phone / WhatsApp</label>
+          <input class="form-input" type="tel" id="setup-phone" placeholder="+91 98765 43210">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" id="setup-email" placeholder="you@example.com">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">City / Location</label>
+        <input class="form-input" type="text" id="setup-city" placeholder="e.g. Tiruvannamalai, Tamil Nadu">
+      </div>
+    </div>
+
+    <!-- STEP 2: Package Pricing -->
+    <div class="wizard-panel" data-panel="2">
+      <h2>💰 Package Pricing</h2>
+      <p class="sub">Pre-filled with example rates — adjust to match your own pricing per square foot.</p>
+
+      <div class="pkg-grid">
+        <div class="pkg-card basic">
+          <div class="pkg-card-title">Basic</div>
+          <label class="form-label">Rate (₹/sft)</label>
+          <input class="form-input" type="number" id="pkg-basic-rate" value="2100">
+        </div>
+        <div class="pkg-card standard">
+          <div class="pkg-card-title">Standard</div>
+          <label class="form-label">Rate (₹/sft)</label>
+          <input class="form-input" type="number" id="pkg-standard-rate" value="2300">
+        </div>
+        <div class="pkg-card premium">
+          <div class="pkg-card-title">Premium</div>
+          <label class="form-label">Rate (₹/sft)</label>
+          <input class="form-input" type="number" id="pkg-premium-rate" value="2550">
+        </div>
+      </div>
+      <p class="sub" style="margin-top:0">Detailed material specs (cement, steel, doors, etc.) can be fine-tuned later from Settings → Packages.</p>
+    </div>
+
+    <!-- STEP 3: Specs & Terms -->
+    <div class="wizard-panel" data-panel="3">
+      <h2>📋 Specs &amp; Terms</h2>
+      <p class="sub">Pre-filled with a standard template — edit freely or keep as-is for now.</p>
+
+      <div class="form-group">
+        <label class="form-label">General Specifications</label>
+        <textarea class="form-textarea" id="setup-specs"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Terms &amp; Conditions</label>
+        <textarea class="form-textarea" id="setup-terms"></textarea>
+      </div>
+    </div>
+
+    <!-- STEP 4: Done -->
+    <div class="wizard-panel" data-panel="4">
+      <div class="done-icon">✅</div>
+      <h2 style="text-align:center">You're all set!</h2>
+      <p class="sub" style="text-align:center">Here's what we've saved for your company:</p>
+      <div class="done-summary" id="doneSummary"></div>
+    </div>
+
+    <div id="wizardStatus" class="status-msg"></div>
+
+    <div class="wizard-nav">
+      <button class="btn btn-secondary" id="backBtn" onclick="wizardBack()" style="display:none">Back</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="wizardNext()">Continue →</button>
+    </div>
+
+    <span class="setup-skip" id="skipLink" onclick="skipSetup()">Skip for now, I'll set up later</span>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://gmpamjblvnbiqwbkzmtp.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
+
+let accessToken = null;
+let currentUserId = null;
+let currentStep = 1;
+const totalSteps = 4;
+
+const DEFAULT_SPECS_TEXT = `FOUNDATION & STRUCTURE
+- Foundation: 5 ft below GL with column footing, RCC 1:2:4
+- Basement: 3 ft above RL, columns in RCC 1:1.5:3, brickwork in CM 1:6
+- Super structure: 9" thick brick wall in CM 1:6, 10 ft height
+- RCC framed structure
+- Roof slab: RCC 4.5" thick, mix 1:2:4
+
+JOINERIES
+- Main door: as per package specification
+- Other doors: as per package specification
+
+FLOORING
+- Floor: Vitrified tiles over CC 1:5:10 bed
+- Portico: Vitrified tiles
+- Staircase: as per package specification
+
+FINISHING & PAINTING
+- Interior: 2 coats over 2 coats wall putty
+- Exterior: Exterior emulsion — 2 coats over 1 coat primer
+
+ELECTRICAL & PLUMBING
+- Main switch: Three phase provision
+- AC provision: For all bedrooms
+- Plumbing: ISI make CPVC pipe lines
+
+Edit this template freely to match your own construction specifications.`;
+
+const DEFAULT_TERMS_TEXT = `1. PAYMENT SCHEDULE
+- Advance: 15%
+- Basement Level: 10%
+- Ground Floor Roof Level: 15%
+- First Floor Roof Level: 20%
+- Balance after completion
+
+2. PROJECT TIMELINE
+- Commencement: Within 10 days of work order
+- Completion: Within 240 days from work order date
+
+3. MATERIALS & RATES
+- Rates firm until completion
+- GST: To be borne by the owner if applicable
+
+4. GENERAL
+- Bills prepared as per actual executed work
+- Additions/alterations to agreed plan will be chargeable
+
+Edit this template freely to match your own terms and conditions.`;
+
+// ---------- LOGIN ----------
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const statusEl = document.getElementById('loginStatus');
+
+  if (!email || !password) {
+    showStatus(statusEl, 'Please enter email and password.', 'error');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+
+    if (!res.ok || !data.access_token) {
+      showStatus(statusEl, '❌ ' + (data.error_description || data.msg || 'Login failed'), 'error');
+      return;
+    }
+
+    accessToken = data.access_token;
+    currentUserId = data.user.id;
+
+    document.getElementById('loginScreen').style.display = 'none';
+    await checkSetupStatus();
+
+  } catch (err) {
+    showStatus(statusEl, '❌ ' + err.message, 'error');
+  }
+}
+
+function showStatus(el, msg, type) {
+  el.textContent = msg;
+  el.className = 'status-msg show ' + type;
+}
+
+// ---------- CHECK IF WIZARD SHOULD SHOW ----------
+async function checkSetupStatus() {
+  // Find this user's company and check setup_completed
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/companies?select=id,setup_completed&owner_user_id=eq.${currentUserId}`,
+    { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + accessToken } }
+  );
+  const companies = await res.json();
+
+  if (companies.length === 0) {
+    // No company yet — in the real app this would trigger company creation first.
+    alert('No company found for this user. (In the real app, company creation happens at signup.)');
+    return;
+  }
+
+  const company = companies[0];
+  window.currentCompanyId = company.id;
+
+  if (!company.setup_completed) {
+    openWizard();
+  } else {
+    alert('Setup already completed for this company. (Wizard available again via Settings → Setup.)');
+  }
+}
+
+// ---------- WIZARD NAVIGATION ----------
+function openWizard() {
+  document.getElementById('setupWizard').style.display = 'flex';
+  document.getElementById('setup-specs').value = DEFAULT_SPECS_TEXT;
+  document.getElementById('setup-terms').value = DEFAULT_TERMS_TEXT;
+  renderStep();
+}
+
+function renderStep() {
+  document.querySelectorAll('.wizard-panel').forEach(p => {
+    p.classList.toggle('active', Number(p.dataset.panel) === currentStep);
+  });
+  document.querySelectorAll('.wizard-step-dot').forEach(d => {
+    const step = Number(d.dataset.step);
+    d.classList.toggle('active', step === currentStep);
+    d.classList.toggle('done', step < currentStep);
+  });
+
+  document.getElementById('backBtn').style.display = currentStep > 1 ? 'block' : 'none';
+  document.getElementById('skipLink').style.display = currentStep < totalSteps ? 'block' : 'none';
+
+  const nextBtn = document.getElementById('nextBtn');
+  if (currentStep === totalSteps) {
+    nextBtn.textContent = 'Go to Dashboard →';
+  } else if (currentStep === totalSteps - 1) {
+    nextBtn.textContent = 'Save & Finish →';
+  } else {
+    nextBtn.textContent = 'Continue →';
+  }
+}
+
+function wizardBack() {
+  if (currentStep > 1) { currentStep--; renderStep(); }
+}
+
+async function wizardNext() {
+  const statusEl = document.getElementById('wizardStatus');
+  statusEl.className = 'status-msg';
+
+  if (currentStep === 1) {
+    const company = document.getElementById('setup-company').value.trim();
+    if (!company) {
+      showStatus(statusEl, 'Please enter your company name.', 'error');
+      return;
+    }
+    currentStep++;
+    renderStep();
+    return;
+  }
+
+  if (currentStep === 2) {
+    currentStep++;
+    renderStep();
+    return;
+  }
+
+  if (currentStep === 3) {
+    // Save everything to Supabase now
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.disabled = true;
+    nextBtn.textContent = 'Saving...';
+
+    try {
+      await saveAllToSupabase();
+      currentStep++;
+      renderStep();
+      renderDoneSummary();
+    } catch (err) {
+      showStatus(statusEl, '❌ Save failed: ' + err.message, 'error');
+    }
+
+    nextBtn.disabled = false;
+    return;
+  }
+
+  if (currentStep === totalSteps) {
+    document.getElementById('setupWizard').style.display = 'none';
+    alert('Wizard complete! (In the real app, this redirects to the main dashboard.)');
+  }
+}
+
+async function skipSetup() {
+  if (!window.currentCompanyId) return;
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/companies?id=eq.${window.currentCompanyId}`, {
+      method: 'PATCH',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ setup_completed: true })
+    });
+  } catch (err) {
+    console.error('Skip save failed', err);
+  }
+  document.getElementById('setupWizard').style.display = 'none';
+  alert('Setup skipped. You can complete it anytime from Settings → Setup.');
+}
+
+// ---------- SAVE TO SUPABASE ----------
+async function saveAllToSupabase() {
+  const companyId = window.currentCompanyId;
+  const get = id => (document.getElementById(id) || {}).value || '';
+
+  const logoPreview = document.getElementById('setupLogoPreview');
+  const logoDataUrl = (logoPreview && logoPreview.src && logoPreview.src.startsWith('data:')) ? logoPreview.src : '';
+
+  // 1. Update company branding
+  const companyPayload = {
+    name: get('setup-company').trim(),
+    tagline: get('setup-tagline').trim(),
+    phone: get('setup-phone').trim(),
+    wa_number: get('setup-phone').trim().replace(/\D/g, ''),
+    email: get('setup-email').trim(),
+    city: get('setup-city').trim(),
+    setup_completed: true
+    // Note: logo upload to Supabase Storage is a Phase 3 item;
+    // for now we just note whether one was selected.
+  };
+
+  await supabasePatch('companies', companyId, companyPayload);
+
+  // 2. Upsert packages (basic/standard/premium)
+  const tiers = ['basic', 'standard', 'premium'];
+  for (const tier of tiers) {
+    const rate = Number(get(`pkg-${tier}-rate`)) || 0;
+    await supabaseUpsert('packages', {
+      company_id: companyId,
+      tier: tier,
+      rate_per_sft: rate
+    }, 'company_id,tier');
+  }
+
+  // 3. Upsert specs_text (specs + terms)
+  await supabaseUpsert('specs_text', {
+    company_id: companyId,
+    doc_type: 'specs',
+    content: get('setup-specs')
+  }, 'company_id,doc_type');
+
+  await supabaseUpsert('specs_text', {
+    company_id: companyId,
+    doc_type: 'terms',
+    content: get('setup-terms')
+  }, 'company_id,doc_type');
+}
+
+async function supabasePatch(table, id, payload) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method: 'PATCH',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + accessToken,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `Failed to update ${table}`);
+  }
+}
+
+async function supabaseUpsert(table, payload, conflictCols) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?on_conflict=${conflictCols}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + accessToken,
+      'Content-Type': 'application/json',
+      'Prefer': 'resolution=merge-duplicates,return=minimal'
+    },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `Failed to save ${table}`);
+  }
+}
+
+function renderDoneSummary() {
+  const get = id => (document.getElementById(id) || {}).value || '';
+  document.getElementById('doneSummary').innerHTML = `
+    <div><strong>${get('setup-company')}</strong> ${get('setup-tagline') ? '— ' + get('setup-tagline') : ''}</div>
+    <div>${get('setup-city') || 'No city set'}</div>
+    <div>Basic ₹${get('pkg-basic-rate')}/sft · Standard ₹${get('pkg-standard-rate')}/sft · Premium ₹${get('pkg-premium-rate')}/sft</div>
+    <div>Specs & Terms saved</div>
+  `;
+}
+
+// ---------- LOGO HANDLING ----------
+document.getElementById('setupLogoFile').addEventListener('change', function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const prev = document.getElementById('setupLogoPreview');
+    const ph = document.getElementById('setupLogoPlaceholder');
+    if (prev) { prev.src = e.target.result; prev.style.display = 'block'; }
+    if (ph) ph.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+});
+</script>
+
+</body>
+</html>
