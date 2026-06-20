@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RLS Isolation Test</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f4f5f7;
+    margin: 0;
+    padding: 20px;
+    color: #1a1a1a;
+  }
+  h1 { font-size: 1.4rem; margin-bottom: 4px; }
+  p.sub { color: #666; margin-top: 0; font-size: 0.9rem; }
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  label { display: block; font-size: 0.85rem; font-weight: 600; margin: 10px 0 4px; }
+  input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  button {
+    margin-top: 14px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  button:active { background: #1d4ed8; }
+  button:disabled { background: #aaa; }
+  .result {
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .result.ok { background: #ecfdf5; border: 1px solid #10b981; color: #065f46; }
+  .result.bad { background: #fef2f2; border: 1px solid #ef4444; color: #991b1b; }
+  .result.pending { background: #f3f4f6; border: 1px solid #ccc; color: #555; }
+</style>
+</head>
+<body>
+
+<h1>🔒 RLS Isolation Test</h1>
+<p class="sub">Logs in as a user, then asks the database "what companies can you see?"</p>
+
+<div class="card">
+  <label>Email</label>
+  <input id="email" type="email" placeholder="test@example.com">
+
+  <label>Password</label>
+  <input id="password" type="password" placeholder="password">
+
+  <button id="runBtn" onclick="runTest()">Sign In &amp; Check Visible Companies</button>
+
+  <div id="result" class="result pending">Enter email + password above and tap the button.</div>
+</div>
+
+<div class="card">
+  <strong>How to read the result:</strong>
+  <p style="font-size:0.85rem; color:#555; margin-top:6px;">
+  Sign in as your <strong>test user</strong> first — you should see only "Test Builders Co".<br><br>
+  Then sign in as your <strong>Elite Homes owner</strong> account — you should see only "Elite Homes".<br><br>
+  If either login shows BOTH companies, isolation is broken.
+  </p>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://gmpamjblvnbiqwb.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
+
+async function runTest() {
+  const btn = document.getElementById('runBtn');
+  const resultEl = document.getElementById('result');
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+
+  if (!email || !password) {
+    resultEl.className = 'result bad';
+    resultEl.textContent = 'Please enter email and password.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Checking...';
+  resultEl.className = 'result pending';
+  resultEl.textContent = 'Signing in...';
+
+  try {
+    const authRes = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const authData = await authRes.json();
+
+    if (!authRes.ok || !authData.access_token) {
+      resultEl.className = 'result bad';
+      resultEl.textContent = '❌ Login failed: ' + (authData.error_description || authData.msg || authData.error || JSON.stringify(authData));
+      btn.disabled = false;
+      btn.textContent = 'Sign In & Check Visible Companies';
+      return;
+    }
+
+    const accessToken = authData.access_token;
+    const userId = authData.user?.id || '(unknown)';
+
+    resultEl.textContent = 'Signed in as ' + email + '. Querying companies table...';
+
+    const queryRes = await fetch(`${SUPABASE_URL}/rest/v1/companies?select=id,name,city,owner_user_id`, {
+      method: 'GET',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + accessToken
+      }
+    });
+
+    const companies = await queryRes.json();
+
+    if (!queryRes.ok) {
+      resultEl.className = 'result bad';
+      resultEl.textContent = '❌ Query failed: ' + JSON.stringify(companies);
+      btn.disabled = false;
+      btn.textContent = 'Sign In & Check Visible Companies';
+      return;
+    }
+
+    const count = companies.length;
+    let html = `Signed in as: ${email}\nUser ID: ${userId}\n\nVisible companies: ${count}\n`;
+    companies.forEach(c => {
+      html += `\n• ${c.name} (${c.city || 'no city'})`;
+    });
+
+    if (count === 1) {
+      resultEl.className = 'result ok';
+      html += '\n\n✅ PASS — this user sees exactly one company.';
+    } else if (count === 0) {
+      resultEl.className = 'result bad';
+      html += '\n\n⚠️ ZERO companies visible. Either no company is linked to this user, or RLS is too strict.';
+    } else {
+      resultEl.className = 'result bad';
+      html += `\n\n❌ FAIL — this user sees ${count} companies. Isolation is NOT working.`;
+    }
+
+    resultEl.textContent = html;
+
+  } catch (err) {
+    resultEl.className = 'result bad';
+    resultEl.textContent = '❌ Unexpected error: ' + err.message;
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Sign In & Check Visible Companies';
+}
+</script>
+
+</body>
+</html>
