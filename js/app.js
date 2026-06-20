@@ -916,7 +916,7 @@
     const params=new URLSearchParams(window.location.search);
     const q=params.get('q');
     if(q){try{const data=JSON.parse(decodeURIComponent(atob(q)));showPage('quote',document.querySelectorAll('.nav-btn')[1]);loadClientView(data);}catch(e){console.warn('Invalid quote link',e);}}
-    else { const navFin=document.getElementById('nav-finalize'); if(navFin) navFin.style.display='block'; }
+    else if(!params.get('specs') && !params.get('fcspecs')) { const navFin=document.getElementById('nav-finalize'); if(navFin) navFin.style.display='block'; }
   })();
 
   // ══════════════════════════════════════════════════
@@ -1795,6 +1795,127 @@ OTHER WORKS
     });
     if (inSection) html += '</ul></div>';
     return html;
+  }
+
+  // ── SHAREABLE SPECS LINK (General Specs & Terms) ─────────────────
+  function copySpecsShareLink(type) {
+    const link = window.location.href.split('?')[0] + '?specs=1';
+    navigator.clipboard.writeText(link).then(() => {
+      const msg = document.getElementById(type + '-share-msg');
+      if (msg) { msg.style.display = 'inline'; setTimeout(() => msg.style.display = 'none', 2500); }
+    }).catch(() => {
+      prompt('Copy this link:', link);
+    });
+  }
+
+  function renderSpecsSharePage() {
+    const cfg = getConfig();
+    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+    const navEl = document.querySelector('nav');
+    if (navEl) navEl.style.display = 'none';
+    const adminBtn = document.querySelector('.admin-trigger');
+    if (adminBtn) adminBtn.style.display = 'none';
+
+    const wrap = document.createElement('div');
+    wrap.id = 'specsShareView';
+    wrap.style.cssText = 'max-width:800px;margin:0 auto;padding:40px 20px;';
+    wrap.innerHTML = `
+      <div style="display:flex;align-items:center;gap:14px;border-bottom:3px solid var(--gold);padding-bottom:20px;margin-bottom:28px">
+        ${cfg.logo ? `<img src="${cfg.logo}" style="height:50px;width:50px;object-fit:contain;border-radius:8px"/>` : ''}
+        <div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--gold)">${cfg.company}</div>
+          <div style="font-size:0.85rem;color:var(--muted)">${cfg.tagline} · ${cfg.city}</div>
+        </div>
+      </div>
+      <h1 style="font-family:'Playfair Display',serif;font-size:1.8rem;margin-bottom:24px">General Specifications &amp; Terms</h1>
+      <div class="card" style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px">
+        <h3 style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)">General Specifications</h3>
+        ${specsTextToHtml(getSpecsText('specs'))}
+      </div>
+      <div class="card" style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px">
+        <h3 style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)">Terms &amp; Conditions</h3>
+        ${specsTextToHtml(getSpecsText('terms'))}
+      </div>
+      <div style="text-align:center;padding:20px 0;font-size:0.82rem;color:var(--muted)">
+        <strong style="color:var(--text)">${cfg.company}</strong> &nbsp;|&nbsp; ${cfg.phone} &nbsp;|&nbsp; ${cfg.email}
+      </div>`;
+    document.body.appendChild(wrap);
+  }
+
+  // ── SHAREABLE FALSE CEILING SPECS LINK ───────────────────────────
+  function copyFcSpecsShareLink() {
+    const link = window.location.href.split('?')[0] + '?fcspecs=1';
+    navigator.clipboard.writeText(link).then(() => {
+      const msg = document.getElementById('fc-share-msg');
+      if (msg) { msg.style.display = 'block'; setTimeout(() => msg.style.display = 'none', 3000); }
+    }).catch(() => {
+      prompt('Copy this link:', link);
+    });
+  }
+
+  function renderFcSpecsSharePage() {
+    const cfg = getConfig();
+    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+    const navEl = document.querySelector('nav');
+    if (navEl) navEl.style.display = 'none';
+    const adminBtn = document.querySelector('.admin-trigger');
+    if (adminBtn) adminBtn.style.display = 'none';
+
+    const tierRows = Object.entries(FC_TIERS).map(([key, t]) => `
+      <div class="fc-room-card" style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div class="fc-room-title">${t.label}</div>
+          <div style="font-size:1.1rem;font-weight:800;color:var(--gold)">₹${t.rate}/sft</div>
+        </div>
+        <div style="font-size:0.85rem;color:var(--muted)">Channel: <strong style="color:var(--text)">${t.channel}</strong></div>
+        <div style="font-size:0.85rem;color:var(--muted)">Covering Board: <strong style="color:var(--text)">${t.board}</strong></div>
+      </div>`).join('');
+
+    const addonRows = Object.entries(FC_ADDONS).map(([key, a]) => `
+      <div class="fc-room-card" style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div class="fc-room-title">${a.label}</div>
+          <div style="font-size:1.1rem;font-weight:800;color:var(--gold)">${a.rate ? '₹'+a.rate+'/'+a.unit : a.note}</div>
+        </div>
+        ${a.channel ? `<div style="font-size:0.85rem;color:var(--muted)">Channel: <strong style="color:var(--text)">${a.channel}</strong></div>` : ''}
+        ${a.board ? `<div style="font-size:0.85rem;color:var(--muted)">Covering: <strong style="color:var(--text)">${a.board}</strong></div>` : ''}
+      </div>`).join('');
+
+    const globalRows = Object.entries(FC_GLOBALS).map(([key, g]) => `
+      <div class="fc-room-card" style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="fc-room-title">${g.label}</div>
+          <div style="font-size:1.1rem;font-weight:800;color:var(--gold)">₹${g.rate}/${g.unit}</div>
+        </div>
+      </div>`).join('');
+
+    const wrap = document.createElement('div');
+    wrap.id = 'fcSpecsShareView';
+    wrap.style.cssText = 'max-width:800px;margin:0 auto;padding:40px 20px;';
+    wrap.innerHTML = `
+      <div style="display:flex;align-items:center;gap:14px;border-bottom:3px solid var(--gold);padding-bottom:20px;margin-bottom:28px">
+        ${cfg.logo ? `<img src="${cfg.logo}" style="height:50px;width:50px;object-fit:contain;border-radius:8px"/>` : ''}
+        <div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--gold)">${cfg.company}</div>
+          <div style="font-size:0.85rem;color:var(--muted)">${cfg.tagline} · ${cfg.city}</div>
+        </div>
+      </div>
+      <h1 style="font-family:'Playfair Display',serif;font-size:1.8rem;margin-bottom:8px">False Ceiling Specifications</h1>
+      <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px">Materials and rates for each tier, available add-ons, and global charges.</p>
+
+      <h3 style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin:24px 0 12px">Material Tiers</h3>
+      ${tierRows}
+
+      <h3 style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin:24px 0 12px">Add-ons (per room)</h3>
+      ${addonRows}
+
+      <h3 style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin:24px 0 12px">Global Charges</h3>
+      ${globalRows}
+
+      <div style="text-align:center;padding:20px 0;margin-top:20px;font-size:0.82rem;color:var(--muted)">
+        <strong style="color:var(--text)">${cfg.company}</strong> &nbsp;|&nbsp; ${cfg.phone} &nbsp;|&nbsp; ${cfg.email}
+      </div>`;
+    document.body.appendChild(wrap);
   }
   // ══════════════════════════════════════════════════
 
@@ -2794,3 +2915,9 @@ tr:nth-child(even) td{background:#fafaf8}
   }
   // ══════════════════════════════════════════════════
 
+  // ── SHARE-LINK PAGE DISPATCH (runs last, after all data is defined) ──
+  (function specsLinkDispatch(){
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('specs')) { renderSpecsSharePage(); }
+    else if (params.get('fcspecs')) { renderFcSpecsSharePage(); }
+  })();
