@@ -248,8 +248,18 @@ async function sbDoLogin() {
     if (overlay) overlay.remove();
 
     // Trigger app startup (applyConfig + checkFirstLaunch equivalents)
+    //if (typeof applyConfig === 'function') applyConfig();
+    //if (typeof checkSetupStatus === 'function') checkSetupStatus();
+
+        // Re-run applyConfig now that SB_CONFIG is populated
     if (typeof applyConfig === 'function') applyConfig();
-    if (typeof checkSetupStatus === 'function') checkSetupStatus();
+    
+    // Show setup wizard if this contractor hasn't completed setup yet
+    if (window.SB_CONFIG && !window.SB_CONFIG.setup_completed) {
+      const wiz = document.getElementById('setupWizard');
+      if (wiz) wiz.style.display = 'flex';
+    }
+
 
   } catch (err) {
     errEl.textContent = '❌ ' + err.message;
