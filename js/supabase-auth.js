@@ -237,6 +237,8 @@ async function sbDoLogin() {
     }
 
     window.SB_SESSION = { access_token: data.access_token, user: data.user };
+    // Persist session so page refresh doesn't require re-login
+    localStorage.setItem('sb_session', JSON.stringify({ access_token: data.access_token, user: data.user }));
 
     btn.textContent = 'Loading your company…';
 
@@ -282,6 +284,8 @@ async function sbLogout() {
   window.SB_SESSION = null;
   window.SB_COMPANY_ID = null;
   window.SB_CONFIG = null;
+    localStorage.removeItem('sb_session');
+
 
   // Clear specs from localStorage so they reload fresh next login
   ['specs', 'terms'].forEach(t => localStorage.removeItem('eh_' + t + '_text'));
@@ -333,9 +337,33 @@ function patchAppFunctions() {
 // Show login screen immediately before app renders,
 // then patch functions once DOM is ready
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+  // Try to restore session from localStorage first
+  const saved = localStorage.getItem('sb_session');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      // Verify token is still valid by fetching company
+      window.SB_SESSION = parsed;
+      await loadCompanyConfig();
+      await loadSpecsFromDB();
+      if (typeof applyConfig === 'function') applyConfig();
+      if (window.SB_CONFIG && !window.SB_CONFIG.setup_completed) {
+        const wiz = document.getElementById('setupWizard');
+        if (wiz) wiz.style.display = 'flex';
+      }
+      document.addEventListener('appReady', patchAppFunctions);
+      setTimeout(patchAppFunctions, 1500);
+      return; // skip login screen
+    } catch (e) {
+      // Token expired or invalid — clear it and show login
+      localStorage.removeItem('sb_session');
+      window.SB_SESSION = null;
+    }
+  }
   injectLoginScreen();
   document.addEventListener('appReady', patchAppFunctions);
-  // Fallback patch in case appReady isn't fired
   setTimeout(patchAppFunctions, 1500);
+});
+
 });
