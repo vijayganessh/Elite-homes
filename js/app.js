@@ -1525,10 +1525,22 @@
   };
 
   function getConfig() {
+    // Phase 3: read from Supabase session config if available,
+    // fall back to localStorage for backward compat / first load
+    if (window.SB_CONFIG) return Object.assign({}, DEFAULT_CONFIG, window.SB_CONFIG);
     try { const s=localStorage.getItem('eh_config'); return s?Object.assign({},DEFAULT_CONFIG,JSON.parse(s)):Object.assign({},DEFAULT_CONFIG); }
     catch(e){ return Object.assign({},DEFAULT_CONFIG); }
   }
-  function saveConfig(cfg){ localStorage.setItem('eh_config',JSON.stringify(cfg)); }
+  function saveConfig(cfg){
+    // Phase 3: write to Supabase if session exists, else localStorage
+    if (window.SB_SESSION && typeof saveConfigToDB === 'function') {
+      saveConfigToDB(cfg).catch(e => console.warn('[SB] saveConfig failed:', e));
+    } else {
+      localStorage.setItem('eh_config', JSON.stringify(cfg));
+    }
+    // Always keep SB_CONFIG in sync
+    if (window.SB_CONFIG) window.SB_CONFIG = Object.assign(window.SB_CONFIG, cfg);
+  }
 
   function applyConfig() {
     const cfg=getConfig();
@@ -1547,9 +1559,10 @@
   }
 
   function checkFirstLaunch() {
-    if(!localStorage.getItem('eh_config')){
-      const wiz=document.getElementById('setupWizard'); if(wiz) wiz.style.display='flex';
-    }
+    // Phase 3: wizard is triggered by setup_completed flag from Supabase,
+    // not by absence of localStorage key.
+    // supabase-auth.js calls checkSetupStatus() after login which handles this.
+    // This function is kept as a no-op for compatibility.
   }
 
   function handleSetupLogo(event) {
@@ -1634,9 +1647,10 @@
   }
 
   function checkPin() {
-    const cfg=getConfig(); const pin=document.getElementById('adminPin').value;
-    if(pin===cfg.pin){adminUnlocked=true;showAdminPanel();}
-    else{const err=document.getElementById('pinError');if(err)err.style.display='block';document.getElementById('adminPin').value='';}
+    // Phase 3: PIN auth replaced by Supabase Auth.
+    // User is already authenticated at this point — just open the panel.
+    adminUnlocked = true;
+    showAdminPanel();
   }
 
   // Apply config and check first launch on load
