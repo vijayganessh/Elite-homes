@@ -12,18 +12,25 @@
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo" style="display:flex;align-items:center;gap:10px"><img src="assets/logo.png" style="height:38px;width:38px;object-fit:contain;border-radius:6px"/><span style="color:var(--gold)">Elite <span style="color:var(--text)">Homes</span></span></div>
-  <div class="nav-links">
-    <button class="nav-btn active" onclick="showPage('projects',this)">Our Projects</button>
-    <button class="nav-btn" onclick="showPage('quote',this)">Get a Quote</button>
-    <button class="nav-btn" onclick="showPage('packages',this)">Packages</button>
-    <button class="nav-btn" onclick="showPage('ceiling',this)">False Ceiling</button>
-    <button class="nav-btn" onclick="showPage('fc-finalize',this)" id="nav-fc-finalize" style="display:none">Finalize FC</button>
-    <button class="nav-btn" onclick="showPage('terms',this)">Terms</button>
-    <button class="nav-btn" onclick="showPage('finalize',this)" id="nav-finalize" style="display:none">Finalize Quote</button>
+  <div class="nav-logo" style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="showPage('projects',document.querySelectorAll('.nav-btn')[0])">
+    <img src="assets/logo.png" style="height:38px;width:38px;object-fit:contain;border-radius:6px"/>
+    <span style="color:var(--gold)">Elite <span style="color:var(--text)">Homes</span></span>
   </div>
-  <button class="nav-cta" onclick="showPage('quote',document.querySelectorAll('.nav-btn')[1])">Get Quote →</button>
+  <div class="nav-links" id="navLinks">
+    <button class="nav-btn active" onclick="showPage('projects',this);closeMenu()">Our Projects</button>
+    <button class="nav-btn" onclick="showPage('quote',this);closeMenu()">Get a Quote</button>
+    <button class="nav-btn" onclick="showPage('packages',this);closeMenu()">Packages</button>
+    <button class="nav-btn" onclick="showPage('ceiling',this);closeMenu()">False Ceiling</button>
+    <button class="nav-btn" onclick="showPage('fc-finalize',this);closeMenu()" id="nav-fc-finalize" style="display:none">Finalize FC</button>
+    <button class="nav-btn" onclick="showPage('terms',this);closeMenu()">Terms</button>
+    <button class="nav-btn" onclick="showPage('finalize',this);closeMenu()" id="nav-finalize" style="display:none">Finalize Quote</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="nav-cta" onclick="showPage('quote',document.querySelectorAll('.nav-btn')[1])">Get Quote →</button>
+    <button class="nav-hamburger" id="navHamburger" onclick="toggleMenu()" aria-label="Menu">☰</button>
+  </div>
 </nav>
+
 
 <!-- ===================== PAGE 1: PROJECTS ===================== -->
 <div class="page active" id="page-projects">
