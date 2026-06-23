@@ -1744,15 +1744,41 @@ OTHER WORKS
 - Building handed over after final settlement of payment
 - Jurisdiction: Courts of Tiruvannamalai, Tamil Nadu`;
 
-  function getSpecsText(type) {
+    function getSpecsText(type) {
+    // Phase 3: read from localStorage (populated from Supabase at login via supabase-auth.js)
+    // Falls back to DEFAULT text if nothing loaded yet
     return localStorage.getItem('eh_' + type + '_text') || (type === 'specs' ? DEFAULT_SPECS_TEXT : DEFAULT_TERMS_TEXT);
   }
-  function saveSpecsText(type) {
+
+    function saveSpecsText(type) {
     const ta = document.getElementById('specsed-textarea-' + type);
-    if (ta) { localStorage.setItem('eh_' + type + '_text', ta.value); }
+    if (!ta) return;
+    const content = ta.value;
+    // Always keep localStorage in sync for reads during this session
+    localStorage.setItem('eh_' + type + '_text', content);
+    // Phase 3: also save to Supabase if session exists
+    if (window.SB_SESSION && window.SB_COMPANY_ID) {
+      const url = 'https://gmpamjblvnbiqwbkzmtp.supabase.co';
+      const key = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
+      fetch(`${url}/rest/v1/specs_text?on_conflict=company_id,doc_type`, {
+        method: 'POST',
+        headers: {
+          'apikey': key,
+          'Authorization': 'Bearer ' + window.SB_SESSION.access_token,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates,return=minimal'
+        },
+        body: JSON.stringify({
+          company_id: window.SB_COMPANY_ID,
+          doc_type: type,
+          content: content
+        })
+      }).catch(e => console.warn('[SB] saveSpecsText failed:', e));
+    }
     const msg = document.getElementById(type + '-saved-msg');
     if (msg) { msg.style.display = 'inline'; setTimeout(() => msg.style.display = 'none', 2000); }
   }
+
   function resetSpecs(type) {
     if (!confirm('Reset to default? Your edits will be lost.')) return;
     localStorage.removeItem('eh_' + type + '_text');
@@ -1773,7 +1799,22 @@ OTHER WORKS
     reader.onload = function(e) {
       const ta = document.getElementById('specsed-textarea-' + type);
       if (ta) ta.value = e.target.result;
-      localStorage.setItem('eh_' + type + '_text', e.target.result);
+            localStorage.setItem('eh_' + type + '_text', e.target.result);
+      // Phase 3: sync uploaded text to Supabase too
+      if (window.SB_SESSION && window.SB_COMPANY_ID) {
+        const url = 'https://gmpamjblvnbiqwbkzmtp.supabase.co';
+        const key = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
+        fetch(`${url}/rest/v1/specs_text?on_conflict=company_id,doc_type`, {
+          method: 'POST',
+          headers: {
+            'apikey': key,
+            'Authorization': 'Bearer ' + window.SB_SESSION.access_token,
+            'Content-Type': 'application/json',
+            'Prefer': 'resolution=merge-duplicates,return=minimal'
+          },
+          body: JSON.stringify({ company_id: window.SB_COMPANY_ID, doc_type: type, content: e.target.result })
+        }).catch(err => console.warn('[SB] uploadSpecsText sync failed:', err));
+      } 
       const msg = document.getElementById(type + '-saved-msg');
       if (msg) { msg.style.display = 'inline'; setTimeout(() => msg.style.display = 'none', 2500); }
     };
