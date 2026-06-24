@@ -517,7 +517,12 @@
 
   /* RESPONSIVE */
   @media (max-width:900px) {
-    .pkg-grid { grid-template-columns:1fr; }
+    .pkg-grid { 
+      grid-template-columns: repeat(3, 280px);
+      overflow-x: auto;
+      padding-bottom: 12px;
+    }
+
     .quote-layout { grid-template-columns:1fr; }
     .form-row { grid-template-columns:1fr; }
     .stats-bar { grid-template-columns:repeat(2,1fr); }
