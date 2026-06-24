@@ -1553,7 +1553,8 @@
     document.querySelectorAll('.footer-contact').forEach(el=>{
       el.innerHTML=`<strong>${cfg.phone}</strong> &nbsp;|&nbsp; ${cfg.email}`;
     });
-    document.querySelectorAll('.footer-logo span').forEach(el=>{ el.textContent=cfg.company; });
+    document.querySelectorAll('.footer-logo span, .footer-company-name').forEach(el=>{ el.textContent=cfg.company; });
+
     document.title=cfg.company+' — '+cfg.tagline;
     document.querySelectorAll('a[href*="wa.me"]').forEach(a=>{ a.href=`https://wa.me/${cfg.waNumber}`; });
   }
