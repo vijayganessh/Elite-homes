@@ -2805,6 +2805,20 @@ tr:nth-child(even) td{background:#fafaf8}
     const btn = document.querySelector('#page-fc-finalize .fc-download-btn');
     if (btn) { btn.textContent='✅ Downloaded!'; setTimeout(()=>btn.textContent='🖨️ Generate & Download Final FC Quote',3000); }
   }
+  function toggleMenu() {
+    const links = document.getElementById('navLinks');
+    const btn = document.getElementById('navHamburger');
+    if (links) links.classList.toggle('open');
+    if (btn) btn.textContent = links && links.classList.contains('open') ? '✕' : '☰';
+  }
+  function closeMenu() {
+    const links = document.getElementById('navLinks');
+    const btn = document.getElementById('navHamburger');
+    if (links) links.classList.remove('open');
+    if (btn) btn.textContent = '☰';
+  }
+
+
   // ══════════════════════════════════════════════════
 
 
