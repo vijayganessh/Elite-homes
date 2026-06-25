@@ -59,8 +59,9 @@
   .nav-cta:hover { background: var(--gold-light); }
 
   /* PAGES */
-  .page { display:none; padding-top:64px; min-height:100vh; }
-  .page.active { display:block; }
+  .page { display:none; padding-top:64px; min-height:100vh; overflow:hidden; max-height:100vh; }
+.page.active { display:block; max-height:none; overflow:visible; }
+
 
   /* HERO BANNER */
   .hero {
