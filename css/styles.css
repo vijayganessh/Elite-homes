@@ -63,6 +63,9 @@
 .page.active { display:block; }
 
 
+footer { visibility:hidden; }
+.page.active footer { visibility:visible; }
+
 
   /* HERO BANNER */
   .hero {
