@@ -115,11 +115,12 @@ async function loadSpecsFromDB() {
     '/rest/v1/specs_text?select=doc_type,content&company_id=eq.' + window.SB_COMPANY_ID
   );
   rows.forEach(row => {
-    // Write into localStorage so the existing getSpecsText() in app.js
-    // reads from DB values without needing changes in app.js yet
     localStorage.setItem('eh_' + row.doc_type + '_text', row.content);
   });
+  // Re-render terms page if it's currently visible
+  if (typeof renderTermsPage === 'function') renderTermsPage();
 }
+
 
 // ── Save config back to Supabase ─────────────────────────────
 // Called by saveSettings() replacement below
