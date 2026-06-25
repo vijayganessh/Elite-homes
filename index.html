@@ -830,14 +830,11 @@
 
 <!-- ADMIN OVERLAY -->
 <div class="admin-overlay" id="adminOverlay">
-  <div class="admin-lock-screen" id="adminLock">
-    <h2>Admin Access</h2>
-    <p>Enter your PIN to manage project listings</p>
-    <input class="admin-pin-input" type="password" id="adminPin" placeholder="Enter PIN" maxlength="6" onkeydown="if(event.key==='Enter')checkPin()"/>
-    <button class="admin-pin-btn" onclick="checkPin()">Unlock</button>
-    <div class="pin-error" id="pinError" style="display:none">Incorrect PIN. Try again.</div>
+    <div class="admin-lock-screen" id="adminLock" style="display:none">
   </div>
-  <div id="adminPanel" style="display:none">
+
+    <div id="adminPanel">
+
     <div class="admin-panel-header">
       <h2>⚙️ Admin Panel</h2>
       <button class="admin-close" onclick="closeAdmin()">✕</button>
