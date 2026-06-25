@@ -793,7 +793,7 @@
   }
 
   // ── ADMIN PANEL ───────────────────────────────────────
-  let adminUnlocked = false;
+  let adminUnlocked = true;
   function openAdmin(){document.getElementById('adminOverlay').classList.add('open');if(adminUnlocked){showAdminPanel();}else{document.getElementById('adminLock').style.display='block';document.getElementById('adminPanel').style.display='none';document.getElementById('adminPin').value='';document.getElementById('pinError').style.display='none';}}
   function closeAdmin(){document.getElementById('adminOverlay').classList.remove('open');}
     function showAdminPanel(){document.getElementById('adminLock').style.display='none';document.getElementById('adminPanel').style.display='block';renderAdminList();currentPhotos=[];renderPhotoGrid();const nf=document.getElementById('nav-fc-finalize');if(nf)nf.style.display='block';}
