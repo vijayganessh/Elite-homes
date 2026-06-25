@@ -149,6 +149,8 @@
     if (btn) btn.classList.add('active');
     window.scrollTo(0, 0);
     if (name === 'projects') renderProjectsPage();
+        if (id === 'terms') renderTermsPage();
+
   }
 
   // ── LIVE PREVIEW ──────────────────────────────────────
@@ -1750,6 +1752,12 @@ OTHER WORKS
     // Falls back to DEFAULT text if nothing loaded yet
     return localStorage.getItem('eh_' + type + '_text') || (type === 'specs' ? DEFAULT_SPECS_TEXT : DEFAULT_TERMS_TEXT);
   }
+
+  function renderTermsPage() {
+    const el = document.getElementById('terms-display');
+    if (el) el.textContent = getSpecsText('terms');
+  }
+
 
     function saveSpecsText(type) {
     const ta = document.getElementById('specsed-textarea-' + type);
