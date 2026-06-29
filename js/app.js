@@ -145,12 +145,39 @@
   function showPage(name, btn) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('page-' + name).classList.add('active');
+    const pg = document.getElementById('page-' + name);
+    if (pg) pg.classList.add('active');
     if (btn) btn.classList.add('active');
     window.scrollTo(0, 0);
     if (name === 'projects') renderProjectsPage();
-        if (id === 'terms') renderTermsPage();
+    if (name === 'settings') loadSettingsPage();
+    if (name === 'terms') renderTermsPage();
+  }
 
+  function loadSettingsPage() {
+    const cfg = getConfig();
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+    setVal('cfg-company', cfg.company);
+    setVal('cfg-tagline', cfg.tagline);
+    setVal('cfg-phone', cfg.phone);
+    setVal('cfg-email', cfg.email);
+    setVal('cfg-city', cfg.city);
+    if (cfg.logo) {
+      const img = document.getElementById('settingsLogoImg');
+      const ph  = document.getElementById('settingsLogoPlaceholder');
+      if (img) { img.src = cfg.logo; img.style.display = 'block'; }
+      if (ph)  ph.style.display = 'none';
+    }
+    const specsTA = document.getElementById('specsed-textarea-specs');
+    const termsTA = document.getElementById('specsed-textarea-terms');
+    if (specsTA) specsTA.value = getSpecsText('specs');
+    if (termsTA) termsTA.value = getSpecsText('terms');
+    if (typeof renderAdminList === 'function') renderAdminList();
+  }
+
+  function renderTermsPage() {
+    const el = document.getElementById('terms-display');
+    if (el) el.textContent = getSpecsText('terms');
   }
 
   // ── LIVE PREVIEW ──────────────────────────────────────
@@ -1633,20 +1660,16 @@
 
   function saveSettings() {
     const cfg=getConfig(); const get=id=>(document.getElementById(id)||{}).value||'';
-    const curPin=get('cfg-pin-current').trim(); const newPin=get('cfg-pin-new').trim();
-    const pinErr=document.getElementById('cfg-pin-error');
-    if(curPin||newPin){ if(curPin!==cfg.pin){if(pinErr)pinErr.style.display='block';return;} if(pinErr)pinErr.style.display='none'; }
     const phone=get('cfg-phone').trim(); const waNumber=phone.replace(/\D/g,'')||cfg.waNumber;
     const logoImg=document.getElementById('settingsLogoImg');
     const logo=(logoImg&&logoImg.src&&logoImg.src.startsWith('data:'))?logoImg.src:cfg.logo;
     const updated=Object.assign({},cfg,{
       company:get('cfg-company').trim()||cfg.company, tagline:get('cfg-tagline').trim()||cfg.tagline,
-      phone, email:get('cfg-email').trim(), city:get('cfg-city').trim(), logo, waNumber, pin:newPin||cfg.pin
+      phone, email:get('cfg-email').trim(), city:get('cfg-city').trim(), logo, waNumber
     });
     saveConfig(updated); applyConfig();
     const msg=document.getElementById('settingsSavedMsg');
     if(msg){msg.style.display='block';setTimeout(()=>msg.style.display='none',3000);}
-    ['cfg-pin-current','cfg-pin-new'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   }
 
   function checkPin() {
