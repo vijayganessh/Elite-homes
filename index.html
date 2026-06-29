@@ -12,28 +12,27 @@
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo" style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="showPage('projects',document.querySelectorAll('.nav-btn')[0])">
+  <div class="nav-logo" style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="showPage('quote',document.getElementById('nav-quote'))">
     <img src="assets/logo.png" style="height:38px;width:38px;object-fit:contain;border-radius:6px"/>
     <span style="color:var(--gold)">Elite <span style="color:var(--text)">Homes</span></span>
   </div>
   <div class="nav-links" id="navLinks">
-    <button class="nav-btn active" onclick="showPage('projects',this);closeMenu()">Our Projects</button>
-    <button class="nav-btn" onclick="showPage('quote',this);closeMenu()">Get a Quote</button>
-    <button class="nav-btn" onclick="showPage('packages',this);closeMenu()">Packages</button>
-    <button class="nav-btn" onclick="showPage('ceiling',this);closeMenu()">False Ceiling</button>
-    <button class="nav-btn" onclick="showPage('fc-finalize',this);closeMenu()" id="nav-fc-finalize" style="display:none">Finalize FC</button>
-    <button class="nav-btn" onclick="showPage('terms',this);closeMenu()">Terms</button>
-    <button class="nav-btn" onclick="showPage('finalize',this);closeMenu()" id="nav-finalize" style="display:none">Finalize Quote</button>
+    <button class="nav-btn active" id="nav-quote" onclick="showPage('quote',this);closeMenu()">Get a Quote</button>
+    <button class="nav-btn" id="nav-ceiling" onclick="showPage('ceiling',this);closeMenu()">False Ceiling</button>
+    <button class="nav-btn" id="nav-fc-finalize" onclick="showPage('fc-finalize',this);closeMenu()" style="display:none">Finalize FC</button>
+    <button class="nav-btn" id="nav-packages" onclick="showPage('packages',this);closeMenu()">Packages</button>
+    <button class="nav-btn" id="nav-projects" onclick="showPage('projects',this);closeMenu()">Portfolio</button>
+    <button class="nav-btn" id="nav-finalize" onclick="showPage('finalize',this);closeMenu()" style="display:none">Finalize Quote</button>
+    <button class="nav-btn" id="nav-settings" onclick="showPage('settings',this);closeMenu()">⚙️ Settings</button>
   </div>
   <div style="display:flex;align-items:center;gap:10px">
-    <button class="nav-cta" onclick="showPage('quote',document.querySelectorAll('.nav-btn')[1])">Get Quote →</button>
     <button class="nav-hamburger" id="navHamburger" onclick="toggleMenu()" aria-label="Menu">☰</button>
   </div>
 </nav>
 
 
 <!-- ===================== PAGE 1: PROJECTS ===================== -->
-<div class="page active" id="page-projects">
+<div class="page" id="page-projects">
   <div class="hero">
     <h1>Building <em>Dreams</em><br/>Into Reality</h1>
     <p>Elite Homes — Property Promotors based in Tiruvannamalai, Tamil Nadu. Building dreams with quality and trust.</p>
@@ -76,7 +75,7 @@
 </div>
 
 <!-- ===================== PAGE 2: QUOTE ===================== -->
-<div class="page" id="page-quote">
+<div class="page active" id="page-quote">
 
   <!-- ADMIN VIEW -->
   <div id="admin-view">
@@ -825,126 +824,129 @@
   </div>
 </div>
 
-<!-- ADMIN TRIGGER BUTTON -->
-<button class="admin-trigger" title="Admin Panel" onclick="openAdmin()">⚙️</button>
+<!-- SETTINGS TRIGGER BUTTON -->
+<button class="admin-trigger" title="Settings" onclick="showPage('settings',document.getElementById('nav-settings'))">⚙️</button>
 
-<!-- ADMIN OVERLAY -->
-<div class="admin-overlay" id="adminOverlay">
-    <div class="admin-lock-screen" id="adminLock" style="display:none">
+<!-- SETTINGS PAGE -->
+<div class="page" id="page-settings">
+  <div class="hero">
+    <h1>Company <em>Settings</em></h1>
+    <p>Manage your company profile, branding, specifications and terms.</p>
   </div>
 
-    <div id="adminPanel">
+  <div class="section" style="max-width:680px;margin:0 auto">
 
-    <div class="admin-panel-header">
-      <h2>⚙️ Admin Panel</h2>
-      <button class="admin-close" onclick="closeAdmin()">✕</button>
-    </div>
-    <div class="admin-tabs">
-      <button class="admin-tab active" onclick="switchAdminTab('projects',this)" id="tab-projects">📁 Projects</button>
-      <button class="admin-tab" onclick="switchAdminTab('settings',this)" id="tab-settings">⚙️ Settings</button>
-    </div>
-    <div class="admin-body">
-      <div class="admin-tab-content active" id="admintab-projects">
-        <div class="admin-projects-list" id="adminProjectsList"></div>
-        <div class="admin-add-form">
-          <h3 id="addFormTitle">Add New Project</h3>
-          <input type="hidden" id="editingIndex" value="-1"/>
-          <div class="admin-form-grid">
-            <div class="form-group"><label class="form-label">Project Name</label><input class="form-input" type="text" id="ap-name" placeholder="e.g. Lakshmi Residency, Tiruvannamalai"/></div>
-            <div class="form-group"><label class="form-label">Description</label><input class="form-input" type="text" id="ap-desc" placeholder="Brief description of the project"/></div>
-            <div class="form-group"><label class="form-label">Built Area (sft)</label><input class="form-input" type="number" id="ap-area" placeholder="e.g. 1500"/></div>
-            <div class="form-group"><label class="form-label">Project Value</label><input class="form-input" type="text" id="ap-value" placeholder="e.g. ₹32L"/></div>
-            <div class="form-group"><label class="form-label">Year Completed</label><input class="form-input" type="number" id="ap-year" placeholder="2024"/></div>
-            <div class="form-group"><label class="form-label">Project Type</label><select class="form-select" id="ap-type"><option>Residential</option><option>Commercial</option></select></div>
-            <div class="form-group"><label class="form-label">Package</label><select class="form-select" id="ap-pkg"><option value="basic">Basic</option><option value="standard">Standard</option><option value="premium">Premium</option></select></div>
-            <div class="form-group"><label class="form-label">Tags (comma separated)</label><input class="form-input" type="text" id="ap-tags" placeholder="e.g. 3BHK, G+1, Teak Doors"/></div>
-          </div>
-          <div class="form-group" style="margin-top:12px;grid-column:1/-1">
-            <label class="form-label">Project Photos <span style="color:var(--muted);font-weight:400">(up to 6)</span></label>
-            <div class="photo-upload-grid" id="photoUploadGrid"></div>
-            <input type="file" id="ap-img-file" accept="image/*" multiple style="display:none" onchange="handleMultiImgUpload(event)"/>
-            <input type="hidden" id="ap-img-data" value="[]"/>
-          </div>
-          <div style="display:flex;gap:10px;margin-top:16px">
-            <button class="form-btn" onclick="saveProject()" style="flex:1">Save Project</button>
-            <button id="cancelEditBtn" style="display:none;padding:10px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="cancelEdit()">Cancel Edit</button>
-          </div>
+    <!-- BRANDING -->
+    <div class="settings-section-title">🏢 Company Profile</div>
+    <div class="settings-grid" style="margin-bottom:28px">
+      <div class="settings-logo-upload" style="grid-column:1/-1">
+        <div class="settings-logo-preview" id="settingsLogoPreview">
+          <img id="settingsLogoImg" src="" style="display:none;width:100%;height:100%;object-fit:contain"/>
+          <span id="settingsLogoPlaceholder" style="font-size:2rem;color:var(--muted)">🏢</span>
+        </div>
+        <div>
+          <div style="font-size:0.88rem;font-weight:600;margin-bottom:6px">Company Logo</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px">Appears in nav, footer and all quotes</div>
+          <button onclick="document.getElementById('settingsLogoFile').click()" style="padding:8px 16px;border-radius:8px;border:1px solid rgba(201,168,76,0.4);background:rgba(201,168,76,0.08);color:var(--gold);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem">Upload Logo</button>
+          <input type="file" id="settingsLogoFile" accept="image/*" style="display:none" onchange="handleSettingsLogo(event)"/>
         </div>
       </div>
-      <div class="admin-tab-content" id="admintab-settings">
-        <div style="padding:24px">
-          <div class="settings-grid">
-            <div class="settings-section-title">🏢 Company Branding</div>
-            <div class="settings-logo-upload" style="grid-column:1/-1">
-              <div class="settings-logo-preview" id="settingsLogoPreview">
-                <img id="settingsLogoImg" src="" style="display:none;width:100%;height:100%;object-fit:contain"/>
-                <span id="settingsLogoPlaceholder" style="font-size:2rem;color:var(--muted)">🏢</span>
-              </div>
-              <div>
-                <div style="font-size:0.88rem;font-weight:600;margin-bottom:6px">Company Logo</div>
-                <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px">Appears in nav, footer and all quotes</div>
-                <button onclick="document.getElementById('settingsLogoFile').click()" style="padding:8px 16px;border-radius:8px;border:1px solid rgba(201,168,76,0.4);background:rgba(201,168,76,0.08);color:var(--gold);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.82rem">Upload Logo</button>
-                <input type="file" id="settingsLogoFile" accept="image/*" style="display:none" onchange="handleSettingsLogo(event)"/>
-              </div>
-            </div>
-            <div class="form-group"><label class="form-label">Company Name</label><input class="form-input" type="text" id="cfg-company" placeholder="e.g. Elite Homes"/></div>
-            <div class="form-group"><label class="form-label">Tagline</label><input class="form-input" type="text" id="cfg-tagline" placeholder="e.g. Property Promotors"/></div>
-            <div class="form-group"><label class="form-label">Phone / WhatsApp</label><input class="form-input" type="tel" id="cfg-phone" placeholder="+91 98765 43210"/></div>
-            <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="cfg-email" placeholder="you@example.com"/></div>
-            <div class="form-group" style="grid-column:1/-1"><label class="form-label">City / Location</label><input class="form-input" type="text" id="cfg-city" placeholder="e.g. Tiruvannamalai, Tamil Nadu"/></div>
-            <div class="settings-section-title" style="margin-top:8px">📝 General Specifications &amp; Terms</div>
-            <div style="grid-column:1/-1">
-              <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">Download as a text file, edit in any editor, then upload back.</p>
-              <div class="specs-editor-tabs">
-                <button class="specs-editor-tab active" onclick="switchSpecsTab('specs',this)">General Specs</button>
-                <button class="specs-editor-tab" onclick="switchSpecsTab('terms',this)">Terms &amp; Conditions</button>
-              </div>
-              <div class="specs-editor-content active" id="specsed-specs">
-                <div class="specs-action-row">
-                  <button class="specs-btn" onclick="downloadSpecsText('specs')">⬇️ Download .txt</button>
-                  <button class="specs-btn" onclick="document.getElementById('specsUploadFile').click()">⬆️ Upload .txt</button>
-                  <button class="specs-btn danger" onclick="resetSpecs('specs')">↺ Reset</button>
-                  <input type="file" id="specsUploadFile" accept=".txt" style="display:none" onchange="uploadSpecsText(event,'specs')"/>
-                </div>
-                <textarea class="specs-textarea" id="specsed-textarea-specs"></textarea>
-                <div class="specs-action-row">
-                  <button class="specs-btn" onclick="saveSpecsText('specs')">💾 Save</button>
-                  <span class="specs-saved" id="specs-saved-msg">✅ Saved!</span>
-                </div>
-                <div class="specs-action-row" style="margin-top:6px">
-                  <button class="specs-btn" onclick="copySpecsShareLink('specs')" style="background:rgba(94,201,138,0.1);border-color:rgba(94,201,138,0.4);color:#5EC98A">🔗 Copy Shareable Link</button>
-                  <span class="specs-saved" id="specs-share-msg" style="color:#5EC98A">✅ Link copied!</span>
-                </div>
-              </div>
-              <div class="specs-editor-content" id="specsed-terms">
-                <div class="specs-action-row">
-                  <button class="specs-btn" onclick="downloadSpecsText('terms')">⬇️ Download .txt</button>
-                  <button class="specs-btn" onclick="document.getElementById('termsUploadFile').click()">⬆️ Upload .txt</button>
-                  <button class="specs-btn danger" onclick="resetSpecs('terms')">↺ Reset</button>
-                  <input type="file" id="termsUploadFile" accept=".txt" style="display:none" onchange="uploadSpecsText(event,'terms')"/>
-                </div>
-                <textarea class="specs-textarea" id="specsed-textarea-terms"></textarea>
-                <div class="specs-action-row">
-                  <button class="specs-btn" onclick="saveSpecsText('terms')">💾 Save</button>
-                  <span class="specs-saved" id="terms-saved-msg">✅ Saved!</span>
-                </div>
-                <div class="specs-action-row" style="margin-top:6px">
-                  <button class="specs-btn" onclick="copySpecsShareLink('terms')" style="background:rgba(94,201,138,0.1);border-color:rgba(94,201,138,0.4);color:#5EC98A">🔗 Copy Shareable Link</button>
-                  <span class="specs-saved" id="terms-share-msg" style="color:#5EC98A">✅ Link copied!</span>
-                </div>
-              </div>
-            </div>
-            <div class="settings-section-title" style="margin-top:8px">🔐 Change PIN</div>
-            <div class="form-group"><label class="form-label">Current PIN</label><input class="form-input" type="password" id="cfg-pin-current" placeholder="Enter current PIN"/></div>
-            <div class="form-group"><label class="form-label">New PIN</label><input class="form-input" type="password" id="cfg-pin-new" placeholder="Enter new PIN"/></div>
-            <div id="cfg-pin-error" style="display:none;color:#ff6060;font-size:0.82rem;grid-column:1/-1">❌ Current PIN incorrect</div>
-            <button class="settings-save-btn" onclick="saveSettings()">💾 Save Settings</button>
-            <div class="settings-saved-msg" id="settingsSavedMsg">✅ Settings saved!</div>
-          </div>
+      <div class="form-group"><label class="form-label">Company Name</label><input class="form-input" type="text" id="cfg-company" placeholder="e.g. Elite Homes"/></div>
+      <div class="form-group"><label class="form-label">Tagline</label><input class="form-input" type="text" id="cfg-tagline" placeholder="e.g. Property Promotors"/></div>
+      <div class="form-group"><label class="form-label">Phone / WhatsApp</label><input class="form-input" type="tel" id="cfg-phone" placeholder="+91 98765 43210"/></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="cfg-email" placeholder="you@example.com"/></div>
+      <div class="form-group" style="grid-column:1/-1"><label class="form-label">City / Location</label><input class="form-input" type="text" id="cfg-city" placeholder="e.g. Tiruvannamalai, Tamil Nadu"/></div>
+      <div style="grid-column:1/-1">
+        <button class="settings-save-btn" onclick="saveSettings()">💾 Save Profile</button>
+        <div class="settings-saved-msg" id="settingsSavedMsg">✅ Settings saved!</div>
+      </div>
+    </div>
+
+    <!-- PORTFOLIO PROJECTS -->
+    <div class="settings-section-title">📁 Portfolio Projects</div>
+    <div style="margin-bottom:28px">
+      <div class="admin-projects-list" id="adminProjectsList"></div>
+      <div class="admin-add-form">
+        <h3 id="addFormTitle" style="font-size:1rem;margin-bottom:14px">Add New Project</h3>
+        <input type="hidden" id="editingIndex" value="-1"/>
+        <div class="admin-form-grid">
+          <div class="form-group"><label class="form-label">Project Name</label><input class="form-input" type="text" id="ap-name" placeholder="e.g. Lakshmi Residency, Tiruvannamalai"/></div>
+          <div class="form-group"><label class="form-label">Description</label><input class="form-input" type="text" id="ap-desc" placeholder="Brief description of the project"/></div>
+          <div class="form-group"><label class="form-label">Built Area (sft)</label><input class="form-input" type="number" id="ap-area" placeholder="e.g. 1500"/></div>
+          <div class="form-group"><label class="form-label">Project Value</label><input class="form-input" type="text" id="ap-value" placeholder="e.g. ₹32L"/></div>
+          <div class="form-group"><label class="form-label">Year Completed</label><input class="form-input" type="number" id="ap-year" placeholder="2024"/></div>
+          <div class="form-group"><label class="form-label">Project Type</label><select class="form-select" id="ap-type"><option>Residential</option><option>Commercial</option></select></div>
+          <div class="form-group"><label class="form-label">Package</label><select class="form-select" id="ap-pkg"><option value="basic">Basic</option><option value="standard">Standard</option><option value="premium">Premium</option></select></div>
+          <div class="form-group"><label class="form-label">Tags (comma separated)</label><input class="form-input" type="text" id="ap-tags" placeholder="e.g. 3BHK, G+1, Teak Doors"/></div>
+        </div>
+        <div class="form-group" style="margin-top:12px">
+          <label class="form-label">Project Photos <span style="color:var(--muted);font-weight:400">(up to 6)</span></label>
+          <div class="photo-upload-grid" id="photoUploadGrid"></div>
+          <input type="file" id="ap-img-file" accept="image/*" multiple style="display:none" onchange="handleMultiImgUpload(event)"/>
+          <input type="hidden" id="ap-img-data" value="[]"/>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button class="form-btn" onclick="saveProject()" style="flex:1">Save Project</button>
+          <button id="cancelEditBtn" style="display:none;padding:10px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="cancelEdit()">Cancel Edit</button>
         </div>
       </div>
     </div>
+
+    <!-- SPECS & TERMS -->
+    <div class="settings-section-title">📝 Specifications &amp; Terms</div>
+    <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">Edit your general specifications and terms &amp; conditions. These appear on all quotes.</p>
+    <div class="specs-editor-tabs">
+      <button class="specs-editor-tab active" onclick="switchSpecsTab('specs',this)">General Specs</button>
+      <button class="specs-editor-tab" onclick="switchSpecsTab('terms',this)">Terms &amp; Conditions</button>
+    </div>
+    <div class="specs-editor-content active" id="specsed-specs">
+      <div class="specs-action-row">
+        <button class="specs-btn" onclick="downloadSpecsText('specs')">⬇️ Download .txt</button>
+        <button class="specs-btn" onclick="document.getElementById('specsUploadFile').click()">⬆️ Upload .txt</button>
+        <button class="specs-btn danger" onclick="resetSpecs('specs')">↺ Reset</button>
+        <input type="file" id="specsUploadFile" accept=".txt" style="display:none" onchange="uploadSpecsText(event,'specs')"/>
+      </div>
+      <textarea class="specs-textarea" id="specsed-textarea-specs"></textarea>
+      <div class="specs-action-row">
+        <button class="specs-btn" onclick="saveSpecsText('specs')">💾 Save</button>
+        <span class="specs-saved" id="specs-saved-msg">✅ Saved!</span>
+      </div>
+      <div class="specs-action-row" style="margin-top:6px">
+        <button class="specs-btn" onclick="copySpecsShareLink('specs')" style="background:rgba(94,201,138,0.1);border-color:rgba(94,201,138,0.4);color:#5EC98A">🔗 Copy Shareable Link</button>
+        <span class="specs-saved" id="specs-share-msg" style="color:#5EC98A">✅ Link copied!</span>
+      </div>
+    </div>
+    <div class="specs-editor-content" id="specsed-terms">
+      <div class="specs-action-row">
+        <button class="specs-btn" onclick="downloadSpecsText('terms')">⬇️ Download .txt</button>
+        <button class="specs-btn" onclick="document.getElementById('termsUploadFile').click()">⬆️ Upload .txt</button>
+        <button class="specs-btn danger" onclick="resetSpecs('terms')">↺ Reset</button>
+        <input type="file" id="termsUploadFile" accept=".txt" style="display:none" onchange="uploadSpecsText(event,'terms')"/>
+      </div>
+      <textarea class="specs-textarea" id="specsed-textarea-terms"></textarea>
+      <div class="specs-action-row">
+        <button class="specs-btn" onclick="saveSpecsText('terms')">💾 Save</button>
+        <span class="specs-saved" id="terms-saved-msg">✅ Saved!</span>
+      </div>
+      <div class="specs-action-row" style="margin-top:6px">
+        <button class="specs-btn" onclick="copySpecsShareLink('terms')" style="background:rgba(94,201,138,0.1);border-color:rgba(94,201,138,0.4);color:#5EC98A">🔗 Copy Shareable Link</button>
+        <span class="specs-saved" id="terms-share-msg" style="color:#5EC98A">✅ Link copied!</span>
+      </div>
+    </div>
+
+    <!-- SIGN OUT -->
+    <div style="margin-top:36px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.08)">
+      <button onclick="sbLogout()" style="padding:12px 24px;border-radius:10px;border:1px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.08);color:#fca5a5;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600">
+        Sign Out
+      </button>
+    </div>
+
   </div>
+
+  <footer>
+    <div class="footer-logo" style="display:flex;align-items:center;gap:10px"><img src="assets/logo.png" style="height:40px;width:40px;object-fit:contain;border-radius:6px"/><span></span></div>
+    <div class="footer-contact"></div>
+  </footer>
 </div>
 
 
