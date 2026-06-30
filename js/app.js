@@ -2857,15 +2857,62 @@ tr:nth-child(even) td{background:#fafaf8}
   // ══════════════════════════════════════════════════
   // WORK ORDER
   // ══════════════════════════════════════════════════
-  function getWorkOrderNumber() {
+  async function getWorkOrderNumber() {
+    const year = new Date().getFullYear();
+    // Phase 3: get next number from Supabase if session exists
+    if (window.SB_SESSION && window.SB_COMPANY_ID) {
+      try {
+        const url = 'https://gmpamjblvnbiqwbkzmtp.supabase.co';
+        const key = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
+        const res = await fetch(`${url}/rest/v1/rpc/next_wo_number`, {
+          method: 'POST',
+          headers: {
+            'apikey': key,
+            'Authorization': 'Bearer ' + window.SB_SESSION.access_token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ p_company_id: window.SB_COMPANY_ID })
+        });
+        if (res.ok) {
+          const counter = await res.json();
+          return { label: 'WO-' + year + '-' + String(counter).padStart(3, '0'), counter };
+        }
+      } catch (e) {
+        console.warn('[SB] getWorkOrderNumber failed, falling back to localStorage:', e);
+      }
+    }
+    // Fallback: localStorage (offline / not logged in)
     let counter = parseInt(localStorage.getItem('eh_wo_counter')) || 0;
     counter += 1;
     localStorage.setItem('eh_wo_counter', counter);
-    const year = new Date().getFullYear();
-    return 'WO-' + year + '-' + String(counter).padStart(3, '0');
+    return { label: 'WO-' + year + '-' + String(counter).padStart(3, '0'), counter };
   }
 
-  function generateWorkOrder() {
+  async function saveWorkOrderToDB(counter, woHtml) {
+    if (!window.SB_SESSION || !window.SB_COMPANY_ID) return;
+    try {
+      const url = 'https://gmpamjblvnbiqwbkzmtp.supabase.co';
+      const key = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
+      await fetch(`${url}/rest/v1/work_orders`, {
+        method: 'POST',
+        headers: {
+          'apikey': key,
+          'Authorization': 'Bearer ' + window.SB_SESSION.access_token,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          company_id: window.SB_COMPANY_ID,
+          wo_number: counter,
+          wo_data: { html_length: woHtml.length, generated_at: new Date().toISOString() }
+        })
+      });
+    } catch (e) {
+      console.warn('[SB] saveWorkOrderToDB failed:', e);
+    }
+  }
+
+  async function generateWorkOrder() {
     if (!fqData) { alert('Please load a quote first.'); return; }
     const cfg   = getConfig();
     const pkg   = fqData.pkg;
@@ -2879,7 +2926,8 @@ tr:nth-child(even) td{background:#fafaf8}
     const addonData = fqData.addonData || [];
     const extraRows = getExtraRows();
     const today = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
-    const woNumber = getWorkOrderNumber();
+    const woResult = await getWorkOrderNumber();
+    const woNumber = woResult.label;
     const logoSrc = document.querySelector('.nav-logo img')?.src || '';
     const pkgLabel = { basic:'Basic', standard:'Standard', premium:'Premium' };
 
@@ -3009,6 +3057,8 @@ tr:nth-child(even) td{background:#fafaf8}
     const a    = document.createElement('a');
     a.href = url; a.download = 'WorkOrder_' + name.replace(/\s+/g,'_') + '.html';
     a.click(); URL.revokeObjectURL(url);
+
+    saveWorkOrderToDB(woResult.counter, html);
 
     const btns = document.querySelectorAll('.fq-finalize-btn');
     const woBtn = [...btns].find(b => b.textContent.includes('Work Order'));
