@@ -151,7 +151,6 @@
     window.scrollTo(0, 0);
     if (name === 'projects') renderProjectsPage();
     if (name === 'settings') loadSettingsPage();
-    if (name === 'terms') renderTermsPage();
   }
 
   function loadSettingsPage() {
@@ -173,11 +172,6 @@
     if (specsTA) specsTA.value = getSpecsText('specs');
     if (termsTA) termsTA.value = getSpecsText('terms');
     if (typeof renderAdminList === 'function') renderAdminList();
-  }
-
-  function renderTermsPage() {
-    const el = document.getElementById('terms-display');
-    if (el) el.textContent = getSpecsText('terms');
   }
 
   // ── LIVE PREVIEW ──────────────────────────────────────
@@ -236,7 +230,7 @@
   }
 
   // ── GENERATE LINK ─────────────────────────────────────
-  function generateShareLink() {
+  async function generateShareLink() {
     const name  = document.getElementById('clientName').value.trim();
     const phone = document.getElementById('clientPhone').value.trim();
     const loc   = document.getElementById('clientLocation').value.trim();
@@ -250,13 +244,58 @@
     const addonData = getAddonData();
 
     if (!name) { alert('Please enter client name.'); return; }
+    if (!phone) { alert('Please enter client phone number (needed for secure quote access).'); return; }
     if (!area || area <= 0) { alert('Please enter floor dimensions.'); return; }
 
     const data = { n:name, p:phone, l:loc, pkg, a:area, f:floors, t:type, v:valid, nt:notes, dims, addons:addonData };
-    const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
-    const link = window.location.href.split('?')[0] + '?q=' + encoded;
-    document.getElementById('shareLinkInput').value = link;
-    document.getElementById('shareBox').classList.add('visible');
+
+    const btn = event ? event.target : null;
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving quote...'; }
+
+    if (!window.SB_SESSION || !window.SB_COMPANY_ID) {
+      alert('You must be signed in to generate a shareable quote link.');
+      if (btn) { btn.disabled = false; btn.textContent = 'Generate Share Link'; }
+      return;
+    }
+
+    try {
+      const url = 'https://gmpamjblvnbiqwbkzmtp.supabase.co';
+      const key = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
+      const totalAmount = (parseFloat(area)||0) * (rates[pkg]||0) + addonData.reduce((s,a)=>s+(a.cost||0),0);
+
+      const res = await fetch(`${url}/rest/v1/quotes`, {
+        method: 'POST',
+        headers: {
+          'apikey': key,
+          'Authorization': 'Bearer ' + window.SB_SESSION.access_token,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({
+          company_id: window.SB_COMPANY_ID,
+          client_name: name,
+          client_phone: phone,
+          client_location: loc,
+          quote_type: 'construction',
+          quote_data: data,
+          status: 'sent',
+          total_amount: totalAmount
+        })
+      });
+
+      if (!res.ok) throw new Error('Failed to save quote (status ' + res.status + ')');
+      const rows = await res.json();
+      const shortCode = rows[0].short_code;
+
+      const link = window.location.href.split('?')[0] + '?quote=' + shortCode;
+      document.getElementById('shareLinkInput').value = link;
+      document.getElementById('shareBox').classList.add('visible');
+
+    } catch (err) {
+      alert('❌ Could not generate share link: ' + err.message);
+    }
+
+    if (btn) { btn.disabled = false; btn.textContent = 'Generate Share Link'; }
   }
 
   function copyLink() {
@@ -943,10 +982,65 @@
     updatePreview();
     renderProjectsPage();
     const params=new URLSearchParams(window.location.search);
-    const q=params.get('q');
-    if(q){try{const data=JSON.parse(decodeURIComponent(atob(q)));showPage('quote',document.querySelectorAll('.nav-btn')[1]);loadClientView(data);}catch(e){console.warn('Invalid quote link',e);}}
+    const quoteCode=params.get('quote');
+    if(quoteCode){ showPage('quote',document.querySelectorAll('.nav-btn')[1]); showPhoneGate(quoteCode); }
     else if(!params.get('specs') && !params.get('fcspecs')) { const navFin=document.getElementById('nav-finalize'); if(navFin) navFin.style.display='block'; }
   })();
+
+  // ── PHONE-GATED CLIENT QUOTE ACCESS ───────────────────
+  function showPhoneGate(shortCode) {
+    document.getElementById('admin-view').style.display = 'none';
+    document.getElementById('client-view').style.display = 'none';
+    document.querySelectorAll('.nav-btn').forEach(b => b.style.display='none');
+    const cta = document.querySelector('.nav-cta'); if (cta) cta.style.display='none';
+    const adminBtn = document.querySelector('.admin-trigger'); if (adminBtn) adminBtn.style.display='none';
+
+    const gate = document.createElement('div');
+    gate.id = 'phoneGateOverlay';
+    gate.style.cssText = 'max-width:420px;margin:80px auto;padding:32px 28px;background:var(--dark2,#1a1a1a);border:1px solid rgba(201,168,76,0.3);border-radius:16px;text-align:center';
+    gate.innerHTML = `
+      <div style="font-size:2rem;margin-bottom:12px">🔒</div>
+      <h2 style="font-family:'Playfair Display',serif;color:var(--gold);margin:0 0 8px;font-size:1.3rem">Verify Your Phone</h2>
+      <p style="color:var(--muted);font-size:0.85rem;margin:0 0 20px">Enter the phone number this quote was sent to, to view it.</p>
+      <input id="phoneGateInput" type="tel" placeholder="Your phone number" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:var(--text);font-size:0.95rem;box-sizing:border-box;margin-bottom:14px" onkeydown="if(event.key==='Enter')verifyPhoneGate('${shortCode}')"/>
+      <button onclick="verifyPhoneGate('${shortCode}')" style="width:100%;padding:13px;border-radius:10px;border:none;background:var(--gold);color:#000;font-weight:800;cursor:pointer;font-family:inherit">View Quote</button>
+      <div id="phoneGateError" style="display:none;margin-top:12px;padding:10px;border-radius:8px;background:rgba(239,68,68,0.1);border:1px solid #ef4444;color:#fca5a5;font-size:0.82rem"></div>
+    `;
+    const page = document.getElementById('page-quote');
+    page.insertBefore(gate, page.firstChild);
+  }
+
+  async function verifyPhoneGate(shortCode) {
+    const phone = document.getElementById('phoneGateInput').value.trim();
+    const errEl = document.getElementById('phoneGateError');
+    if (!phone) { errEl.textContent='Please enter your phone number.'; errEl.style.display='block'; return; }
+
+    try {
+      const url = 'https://gmpamjblvnbiqwbkzmtp.supabase.co';
+      const key = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
+      const res = await fetch(`${url}/rest/v1/rpc/get_quote_for_client`, {
+        method: 'POST',
+        headers: { 'apikey': key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_short_code: shortCode, p_phone: phone })
+      });
+      if (!res.ok) throw new Error('Lookup failed');
+      const result = await res.json();
+
+      if (!result) {
+        errEl.textContent = '❌ No matching quote found. Check the phone number and try again.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      const gate = document.getElementById('phoneGateOverlay');
+      if (gate) gate.remove();
+      loadClientView(result.quote_data);
+
+    } catch (err) {
+      errEl.textContent = '❌ ' + err.message;
+      errEl.style.display = 'block';
+    }
+  }
 
   // ══════════════════════════════════════════════════
   // FINALIZE QUOTE
@@ -1774,11 +1868,6 @@ OTHER WORKS
     // Phase 3: read from localStorage (populated from Supabase at login via supabase-auth.js)
     // Falls back to DEFAULT text if nothing loaded yet
     return localStorage.getItem('eh_' + type + '_text') || (type === 'specs' ? DEFAULT_SPECS_TEXT : DEFAULT_TERMS_TEXT);
-  }
-
-  function renderTermsPage() {
-    const el = document.getElementById('terms-display');
-    if (el) el.textContent = getSpecsText('terms');
   }
 
 
