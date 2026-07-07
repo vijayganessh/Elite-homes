@@ -1774,8 +1774,15 @@
   }
 
   // Apply config and check first launch on load
-  applyConfig();
+  applyConfig();  // NOTE: supabase-auth.js calls this again after login with real DB data
   checkFirstLaunch();
+  // Hide the entire app until login is confirmed — supabase-auth.js controls visibility
+  document.getElementById('page-quote').classList.remove('active');
+  // Nav and settings trigger hidden until auth resolves
+  const nav = document.querySelector('nav');
+  const trigger = document.querySelector('.admin-trigger');
+  if (nav) nav.style.visibility = 'hidden';
+  if (trigger) trigger.style.display = 'none';
 
 
   // ══════════════════════════════════════════════════
@@ -2926,8 +2933,7 @@ tr:nth-child(even) td{background:#fafaf8}
     const btn = document.querySelector('#page-fc-finalize .fc-download-btn');
     if (btn) { btn.textContent='✅ Downloaded!'; setTimeout(()=>btn.textContent='🖨️ Generate & Download Final FC Quote',3000); }
   }
-  // ── SIGN OUT ─────────────────────────────────────────────
-  // Defined here as well as supabase-auth.js so it works regardless of load order
+  // ── SIGN OUT ────────────────────────────────────────────────
   async function sbLogout() {
     const SUPABASE_URL = 'https://gmpamjblvnbiqwbkzmtp.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
@@ -2938,14 +2944,15 @@ tr:nth-child(even) td{background:#fafaf8}
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + window.SB_SESSION.access_token }
         });
       }
-    } catch (e) { /* ignore network errors on logout */ }
+    } catch (e) {}
     window.SB_SESSION = null;
     window.SB_COMPANY_ID = null;
     window.SB_CONFIG = null;
     localStorage.removeItem('sb_session');
     localStorage.removeItem('eh_specs_text');
     localStorage.removeItem('eh_terms_text');
-    window.location.reload();
+    // Show landing page instead of reloading
+    showLandingPage();
   }
 
   function toggleMenu() {
