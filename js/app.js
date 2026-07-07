@@ -2926,6 +2926,28 @@ tr:nth-child(even) td{background:#fafaf8}
     const btn = document.querySelector('#page-fc-finalize .fc-download-btn');
     if (btn) { btn.textContent='✅ Downloaded!'; setTimeout(()=>btn.textContent='🖨️ Generate & Download Final FC Quote',3000); }
   }
+  // ── SIGN OUT ─────────────────────────────────────────────
+  // Defined here as well as supabase-auth.js so it works regardless of load order
+  async function sbLogout() {
+    const SUPABASE_URL = 'https://gmpamjblvnbiqwbkzmtp.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
+    try {
+      if (window.SB_SESSION) {
+        await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + window.SB_SESSION.access_token }
+        });
+      }
+    } catch (e) { /* ignore network errors on logout */ }
+    window.SB_SESSION = null;
+    window.SB_COMPANY_ID = null;
+    window.SB_CONFIG = null;
+    localStorage.removeItem('sb_session');
+    localStorage.removeItem('eh_specs_text');
+    localStorage.removeItem('eh_terms_text');
+    window.location.reload();
+  }
+
   function toggleMenu() {
     const links = document.getElementById('navLinks');
     const btn = document.getElementById('navHamburger');
