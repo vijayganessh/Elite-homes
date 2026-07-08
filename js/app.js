@@ -1025,27 +1025,42 @@
         body: JSON.stringify({ p_short_code: shortCode, p_phone: phone })
       });
       if (!res.ok) throw new Error('Lookup failed: ' + res.status);
-      const result = await res.json();
+      let result = await res.json();
 
-      // RPC returns null if no match
+      // REST API may wrap result in an array
+      if (Array.isArray(result)) result = result[0];
+
+      // null means no match
       if (!result) {
-        errEl.textContent = '❌ No matching quote found. Check the phone number and try again.';
+        errEl.textContent = '❌ Phone number does not match. Please check and try again.';
         errEl.style.display = 'block';
         return;
       }
 
-      // result is the full quote row as JSON (from to_jsonb(q.*))
-      // quote_data is the nested field containing n, p, pkg, a, dims etc.
-      const quoteData = result.quote_data || result;
+      // Result is the full quotes row as JSON (to_jsonb(q.*))
+      // quote_data is the nested field with n, p, pkg, dims etc.
+      let quoteData = result.quote_data;
+
+      // Fallback: if result itself looks like quote_data (has pkg key)
+      if (!quoteData && result.pkg) quoteData = result;
+
+      // If quote_data is a string (double-encoded JSON), parse it
+      if (typeof quoteData === 'string') {
+        try { quoteData = JSON.parse(quoteData); } catch(e) {}
+      }
 
       if (!quoteData || !quoteData.pkg) {
-        errEl.textContent = '❌ Quote data is missing or corrupted. Please ask the contractor to resend the link.';
+        errEl.textContent = '❌ Quote data is missing. Please ask the contractor to resend the link.';
         errEl.style.display = 'block';
+        console.error('[QuoteGate] result shape:', JSON.stringify(result));
         return;
       }
 
       const gate = document.getElementById('phoneGateOverlay');
       if (gate) gate.remove();
+
+      document.getElementById('admin-view').style.display = 'none';
+      document.getElementById('client-view').style.display = 'block';
       loadClientView(quoteData);
 
     } catch (err) {
