@@ -317,9 +317,9 @@
   function loadClientView(data) {
     document.getElementById('admin-view').style.display = 'none';
     document.getElementById('client-view').style.display = 'block';
-    document.querySelectorAll('.nav-btn').forEach(b => { if (b.textContent.includes('Quote')) b.style.display='none'; });
-    document.querySelector('.nav-cta').style.display = 'none';
-    document.querySelector('.admin-trigger').style.display = 'none';
+    document.querySelectorAll('.nav-btn').forEach(b => b.style.display='none');
+    const cta = document.querySelector('.nav-cta'); if (cta) cta.style.display='none';
+    const trigger = document.querySelector('.admin-trigger'); if (trigger) trigger.style.display='none';
 
     const pkg   = data.pkg || 'standard';
     const area  = parseInt(data.a) || 0;
@@ -1025,36 +1025,20 @@
         body: JSON.stringify({ p_short_code: shortCode, p_phone: phone })
       });
       if (!res.ok) throw new Error('Lookup failed: ' + res.status);
-      let result = await res.json();
+      const raw = await res.json();
 
-      // REST API may wrap result in an array
-      if (Array.isArray(result)) result = result[0];
+      // REST API wraps RPC result as: [{ "get_quote_for_client": { ...row... } }]
+      const row = Array.isArray(raw)
+        ? (raw[0] && raw[0].get_quote_for_client ? raw[0].get_quote_for_client : raw[0])
+        : (raw && raw.get_quote_for_client ? raw.get_quote_for_client : raw);
 
-      // null means no match
-      if (!result) {
+      if (!row || !row.quote_data) {
         errEl.textContent = '❌ Phone number does not match. Please check and try again.';
         errEl.style.display = 'block';
         return;
       }
 
-      // Result is the full quotes row as JSON (to_jsonb(q.*))
-      // quote_data is the nested field with n, p, pkg, dims etc.
-      let quoteData = result.quote_data;
-
-      // Fallback: if result itself looks like quote_data (has pkg key)
-      if (!quoteData && result.pkg) quoteData = result;
-
-      // If quote_data is a string (double-encoded JSON), parse it
-      if (typeof quoteData === 'string') {
-        try { quoteData = JSON.parse(quoteData); } catch(e) {}
-      }
-
-      if (!quoteData || !quoteData.pkg) {
-        errEl.textContent = '❌ Quote data is missing. Please ask the contractor to resend the link.';
-        errEl.style.display = 'block';
-        console.error('[QuoteGate] result shape:', JSON.stringify(result));
-        return;
-      }
+      const quoteData = row.quote_data;
 
       const gate = document.getElementById('phoneGateOverlay');
       if (gate) gate.remove();
