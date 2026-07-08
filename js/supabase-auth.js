@@ -116,28 +116,31 @@ async function saveConfigToDB(cfg) {
 // ── Show / hide the app ───────────────────────────────────────
 
 function showApp() {
+  // Remove landing page and login modal from DOM entirely
   const landing = document.getElementById('sb-landing');
   const loginModal = document.getElementById('sb-login-modal');
-  if (landing) landing.style.display = 'none';
-  if (loginModal) loginModal.style.display = 'none';
+  if (landing) landing.remove();
+  if (loginModal) loginModal.remove();
 
-  // Reveal nav and app
+  // Reveal nav and settings trigger
   const nav = document.querySelector('nav');
   const trigger = document.querySelector('.admin-trigger');
-  if (nav) nav.style.visibility = 'visible';
-  if (trigger) trigger.style.display = 'flex';
+  if (nav) { nav.style.visibility = 'visible'; nav.style.pointerEvents = 'auto'; }
+  if (trigger) { trigger.style.display = 'flex'; trigger.style.pointerEvents = 'auto'; }
+
+  // Apply company config first
+  if (typeof applyConfig === 'function') applyConfig();
 
   // Go to quote page
   if (typeof showPage === 'function') {
     showPage('quote', document.getElementById('nav-quote'));
   }
 
-  // Rebuild floor inputs now that page is visible
-  if (typeof buildFloorInputs === 'function') buildFloorInputs();
-  if (typeof updatePreview === 'function') updatePreview();
-
-  // Apply company config
-  if (typeof applyConfig === 'function') applyConfig();
+  // Rebuild floor inputs after a tick to ensure page is visible
+  setTimeout(function() {
+    if (typeof buildFloorInputs === 'function') buildFloorInputs();
+    if (typeof updatePreview === 'function') updatePreview();
+  }, 100);
 
   // Setup wizard if needed
   if (window.SB_CONFIG && !window.SB_CONFIG.setup_completed) {
@@ -154,9 +157,14 @@ function showLandingPage() {
   if (nav) nav.style.visibility = 'hidden';
   if (trigger) trigger.style.display = 'none';
 
+  // Remove existing landing/modal if present, then re-inject fresh
+  const existing = document.getElementById('sb-landing');
+  if (existing) existing.remove();
+  const existingModal = document.getElementById('sb-login-modal');
+  if (existingModal) existingModal.remove();
+
   // Show landing
-  const landing = document.getElementById('sb-landing');
-  if (landing) landing.style.display = 'flex';
+  injectLandingPage();
 }
 
 // ── Landing page ──────────────────────────────────────────────
