@@ -1,6 +1,6 @@
 // ════════════════════════════════════════════════════════════
 // supabase-auth.js — Phase 3 Auth + Landing Page
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 
 const SUPABASE_URL = 'https://gmpamjblvnbiqwbkzmtp.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
