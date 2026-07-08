@@ -132,6 +132,10 @@ function showApp() {
     showPage('quote', document.getElementById('nav-quote'));
   }
 
+  // Rebuild floor inputs now that page is visible
+  if (typeof buildFloorInputs === 'function') buildFloorInputs();
+  if (typeof updatePreview === 'function') updatePreview();
+
   // Apply company config
   if (typeof applyConfig === 'function') applyConfig();
 
