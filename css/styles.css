@@ -635,13 +635,14 @@
   }
   .admin-trigger {
     position:fixed; bottom:24px; left:24px; z-index:150;
-    width:44px; height:44px; border-radius:12px;
-    background:rgba(201,168,76,0.12); border:1px solid rgba(201,168,76,0.25);
-    color:var(--gold); font-size:1.2rem; cursor:pointer;
+    width:44px; height:44px; border-radius:50%;
+    background:var(--gold); border:none;
+    color:#000; font-size:1rem; cursor:pointer;
     display:flex; align-items:center; justify-content:center;
-    transition:all 0.2s;
+    transition:all 0.2s; box-shadow:0 2px 8px rgba(201,168,76,0.4);
+    font-family:'DM Sans',sans-serif;
   }
-  .admin-trigger:hover { background:rgba(201,168,76,0.2); }
+  .admin-trigger:hover { background:var(--gold-light); transform:scale(1.05); }
   .empty-state { text-align:center; padding:32px; color:var(--muted); font-size:0.9rem; }
 
 
