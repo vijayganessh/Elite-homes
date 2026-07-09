@@ -23,7 +23,6 @@
     <button class="nav-btn" id="nav-packages" onclick="showPage('packages',this);closeMenu()">Packages</button>
     <button class="nav-btn" id="nav-projects" onclick="showPage('projects',this);closeMenu()">Portfolio</button>
     <button class="nav-btn" id="nav-finalize" onclick="showPage('finalize',this);closeMenu()" style="display:none">Finalize Quote</button>
-    <button class="nav-btn" id="nav-settings" onclick="showPage('settings',this);closeMenu()">⚙️ Settings</button>
   </div>
   <div style="display:flex;align-items:center;gap:10px">
     <button class="nav-hamburger" id="navHamburger" onclick="toggleMenu()" aria-label="Menu">☰</button>
@@ -802,8 +801,10 @@
   </div>
 </div>
 
-<!-- SETTINGS TRIGGER BUTTON -->
-<button class="admin-trigger" title="Settings" onclick="showPage('settings',document.getElementById('nav-settings'))">⚙️</button>
+<!-- PROFILE BUTTON -->
+<button class="admin-trigger profile-trigger" id="profileTrigger" title="Account & Settings" onclick="showPage('settings',document.getElementById('nav-settings'))">
+  <span id="profileInitials" style="font-size:0.85rem;font-weight:800;letter-spacing:0.03em">EH</span>
+</button>
 
 <!-- SETTINGS PAGE -->
 <div class="page" id="page-settings">
