@@ -1702,18 +1702,6 @@
     </table>
   </div>` : ''}
 
-
-
-  <di
-
-  <div class="card">
-    <h3>Confirmed Specifications</h3>
-    <table>
-      <tr><th>Item</th><th>Specification</th><th>Package</th></tr>
-      ${confirmedSpecs.map(s=>`<tr><td>${s.label}</td><td><strong>${s.value}</strong></td><td><span style="font-size:0.75rem;padding:2px 8px;border-radius:6px;font-weight:700" class="pkg-tag tag-${s.pkg}">${pkgLabel[s.pkg]}${s.pkg===fqData?.pkg?' ✦':''}</span></td></tr>`).join('')}
-    </table>
-  </div>
-
   <div class="card">
     <h3>Package Inclusions</h3>
     <div class="addon-grid">
@@ -2599,6 +2587,31 @@ OTHER WORKS
   <div class="disclaimer">
     Mentioned above is an estimated quotation for the false ceiling work in the mentioned specifications. 
     Final measurements may vary slightly based on site conditions. GST extra if applicable.
+  </div>
+
+  <div style="margin-top:24px;margin-bottom:24px">
+    <div style="font-size:0.78rem;text-transform:uppercase;letter-spacing:1px;color:#888;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #C9A84C">Package Tier Comparison</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Tier</th>
+          <th>Rate</th>
+          <th>Channel</th>
+          <th>Board</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${Object.entries(FC_TIERS).map(([key, tier]) => {
+          const isSelected = fcRooms.some(r => r.tier === key);
+          return `<tr style="${isSelected ? 'background:#fffbef;font-weight:700' : ''}">
+            <td>${tier.label}${isSelected ? ' <span style="background:#C9A84C;color:#fff;padding:1px 6px;border-radius:4px;font-size:0.7rem;margin-left:4px">Selected</span>' : ''}</td>
+            <td>₹${tier.rate}/sft</td>
+            <td style="font-size:0.8rem;color:#666">${tier.channel}</td>
+            <td style="font-size:0.8rem;color:#666">${tier.board}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
   </div>
 
   <div class="footer">
