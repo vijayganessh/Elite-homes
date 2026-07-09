@@ -142,6 +142,8 @@
   }
 
   // ── PAGE NAV ──────────────────────────────────────────
+  let currentPage = 'quote';
+
   function showPage(name, btn) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -149,11 +151,21 @@
     if (pg) pg.classList.add('active');
     if (btn) btn.classList.add('active');
     window.scrollTo(0, 0);
+    currentPage = name;
     if (name === 'projects') renderProjectsPage();
     if (name === 'settings') loadSettingsPage();
   }
 
-  function loadSettingsPage() {
+  function toggleSettings() {
+    if (currentPage === 'settings') {
+      // Already on settings — go back to quote page
+      showPage('quote', document.getElementById('nav-quote'));
+    } else {
+      showPage('settings', document.getElementById('nav-settings'));
+    }
+  }
+
+  async function loadSettingsPage() {
     const cfg = getConfig();
     const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
     setVal('cfg-company', cfg.company);
@@ -171,7 +183,7 @@
     const termsTA = document.getElementById('specsed-textarea-terms');
     if (specsTA) specsTA.value = getSpecsText('specs');
     if (termsTA) termsTA.value = getSpecsText('terms');
-    if (typeof renderAdminList === 'function') renderAdminList();
+    if (typeof renderAdminList === 'function') await renderAdminList();
   }
 
   // ── LIVE PREVIEW ──────────────────────────────────────
@@ -801,21 +813,97 @@
   // ── PROJECTS ──────────────────────────────────────────
   const projColors = ['proj-1','proj-2','proj-3','proj-4','proj-5','proj-6','proj-1','proj-2'];
   const defaultProjects = [
-    { name:'Sivasubramaniyam Residence, Tiruvannamalai', desc:'5BHK luxury residence with premium wire-cut bricks, TATA TMT steel, full teak doors and Jaquar fittings.', area:0, value:'—', year:2025, type:'Residential', pkg:'premium', tags:['5BHK','G+2','TATA TMT'] }
+    { name:'Sivasubramaniyam Residence, Tiruvannamalai', desc:'5BHK luxury residence with premium wire-cut bricks, TATA TMT steel, full teak doors and Jaquar fittings.', area:0, value:'—', year:2025, type:'Residential', pkg:'premium', tags:['5BHK','G+2','TATA TMT'], imgs:[] }
   ];
 
-  function getProjects() {
-    try { const s=localStorage.getItem('bc_projects'); return s?JSON.parse(s):defaultProjects; } catch(e){return defaultProjects;}
-  }
-  function saveProjects(arr) {
-    try{localStorage.setItem('bc_projects',JSON.stringify(arr));}catch(e){}
+  // In-memory cache — loaded once after login, updated on save/delete
+  let projectsCache = null;
+
+  async function getProjects() {
+    if (projectsCache !== null) return projectsCache;
+    if (!window.SB_SESSION || !window.SB_COMPANY_ID) {
+      // Fallback: localStorage
+      try { const s = localStorage.getItem('bc_projects'); return s ? JSON.parse(s) : defaultProjects; } catch(e) { return defaultProjects; }
+    }
+    try {
+      const url = 'https://gmpamjblvnbiqwbkzmtp.supabase.co';
+      const key = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
+      const res = await fetch(`${url}/rest/v1/projects?select=*&company_id=eq.${window.SB_COMPANY_ID}&order=sort_order.asc,created_at.asc`, {
+        headers: { 'apikey': key, 'Authorization': 'Bearer ' + window.SB_SESSION.access_token }
+      });
+      if (!res.ok) throw new Error('fetch failed');
+      const rows = await res.json();
+      // Map DB columns to app shape
+      projectsCache = rows.map(r => ({
+        id:    r.id,
+        name:  r.name,
+        desc:  r.description || '',
+        area:  r.area_sft || 0,
+        value: r.project_value || '—',
+        year:  r.year_completed || new Date().getFullYear(),
+        type:  r.project_type || 'Residential',
+        pkg:   r.package_tier || 'standard',
+        tags:  r.tags || [],
+        imgs:  r.photo_urls || []
+      }));
+      return projectsCache;
+    } catch(e) {
+      console.warn('[SB] getProjects failed:', e);
+      return defaultProjects;
+    }
   }
 
-  function renderProjectsPage() {
-    const projects = getProjects();
+  async function saveProjectToDB(project, existingId) {
+    const url = 'https://gmpamjblvnbiqwbkzmtp.supabase.co';
+    const key = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
+    const payload = {
+      company_id:    window.SB_COMPANY_ID,
+      name:          project.name,
+      description:   project.desc,
+      area_sft:      project.area || 0,
+      project_value: project.value || '',
+      year_completed:project.year || new Date().getFullYear(),
+      project_type:  project.type || 'Residential',
+      package_tier:  project.pkg || 'standard',
+      tags:          project.tags || [],
+      photo_urls:    project.imgs || []
+    };
+    if (existingId) {
+      // Update existing
+      const res = await fetch(`${url}/rest/v1/projects?id=eq.${existingId}`, {
+        method: 'PATCH',
+        headers: { 'apikey': key, 'Authorization': 'Bearer ' + window.SB_SESSION.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('update failed: ' + res.status);
+    } else {
+      // Insert new
+      const res = await fetch(`${url}/rest/v1/projects`, {
+        method: 'POST',
+        headers: { 'apikey': key, 'Authorization': 'Bearer ' + window.SB_SESSION.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('insert failed: ' + res.status);
+    }
+    projectsCache = null; // Invalidate cache
+  }
+
+  async function deleteProjectFromDB(id) {
+    const url = 'https://gmpamjblvnbiqwbkzmtp.supabase.co';
+    const key = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
+    const res = await fetch(`${url}/rest/v1/projects?id=eq.${id}`, {
+      method: 'DELETE',
+      headers: { 'apikey': key, 'Authorization': 'Bearer ' + window.SB_SESSION.access_token }
+    });
+    if (!res.ok) throw new Error('delete failed: ' + res.status);
+    projectsCache = null;
+  }
+
+  async function renderProjectsPage() {
+    const projects = await getProjects();
     const grid = document.getElementById('projectsGrid');
     if (!grid) return;
-    if (!projects.length) { grid.innerHTML='<div class="empty-state">No projects yet. Use the admin panel to add your completed projects.</div>'; return; }
+    if (!projects.length) { grid.innerHTML='<div class="empty-state">No projects yet. Go to Settings → Portfolio to add your completed projects.</div>'; return; }
     grid.innerHTML = projects.map((p,i)=>{
       const badgeCls = p.pkg==='premium'?'badge-premium':p.pkg==='standard'?'badge-standard':'badge-basic';
       const tagsHtml = (p.tags||[]).map(t=>`<span class="project-tag">${t}</span>`).join('');
@@ -830,7 +918,6 @@
             <img src="${imgs[0]}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" alt="${p.name}"/>
             <span class="project-badge ${badgeCls}">${pkgLabel[p.pkg]||p.pkg}</span>
           </div>`;
-          // Multiple photos — carousel
           const cid='carousel-'+i;
           return `<div class="proj-carousel" id="${cid}">
             <div class="proj-carousel-track" id="${cid}-track">
@@ -858,20 +945,24 @@
     }).join('');
   }
 
-  // ── ADMIN PANEL ───────────────────────────────────────
+  // ── ADMIN PANEL (legacy — kept for compatibility) ──────
   let adminUnlocked = true;
-  function openAdmin(){document.getElementById('adminOverlay').classList.add('open');if(adminUnlocked){showAdminPanel();}else{document.getElementById('adminLock').style.display='block';document.getElementById('adminPanel').style.display='none';document.getElementById('adminPin').value='';document.getElementById('pinError').style.display='none';}}
-  function closeAdmin(){document.getElementById('adminOverlay').classList.remove('open');}
-    function showAdminPanel(){document.getElementById('adminLock').style.display='none';document.getElementById('adminPanel').style.display='block';renderAdminList();currentPhotos=[];renderPhotoGrid();const nf=document.getElementById('nav-fc-finalize');if(nf)nf.style.display='block';}
-  function renderAdminList(){
-    const projects=getProjects();const el=document.getElementById('adminProjectsList');
+  function openAdmin(){ showPage('settings', document.getElementById('nav-settings')); }
+  function closeAdmin(){}
+  function showAdminPanel(){ renderAdminList(); }
+
+  async function renderAdminList(){
+    const projects = await getProjects();
+    const el = document.getElementById('adminProjectsList');
+    if (!el) return;
     if(!projects.length){el.innerHTML='<div class="empty-state">No projects yet.</div>';return;}
     el.innerHTML=projects.map((p,i)=>{
       const badgeCls=p.pkg==='premium'?'badge-premium':p.pkg==='standard'?'badge-standard':'badge-basic';
       return`<div class="admin-proj-row"><div class="admin-proj-info"><strong>${p.name}</strong><span>${p.area?Number(p.area).toLocaleString('en-IN')+' sft · ':''} ${p.year}${p.value?' · '+p.value:''}</span></div><span class="admin-proj-badge ${badgeCls}" style="padding:4px 10px;border-radius:8px">${pkgLabel[p.pkg]}</span><button class="admin-edit-btn" onclick="editProject(${i})">Edit</button><button class="admin-del-btn" onclick="deleteProject(${i})">✕</button></div>`;
     }).join('');
   }
-  function saveProject(){
+
+  async function saveProject(){
     const idx=parseInt(document.getElementById('editingIndex').value);
     const name=document.getElementById('ap-name').value.trim();
     const desc=document.getElementById('ap-desc').value.trim();
@@ -884,14 +975,29 @@
     let imgs=[];
     try{ const raw=document.getElementById('ap-img-data').value||'[]'; imgs=JSON.parse(raw); if(!Array.isArray(imgs)) imgs=imgs?[imgs]:[]; }catch(e){imgs=[];}
     if(!name){alert('Project name is required.');return;}
+
     const project={name,desc,area,value,year,type,pkg,tags,imgs};
-    const projects=getProjects();
-    if(idx>=0){projects[idx]=project;}else{projects.push(project);}
-    saveProjects(projects);renderAdminList();renderProjectsPage();cancelEdit();
-    ['ap-name','ap-desc','ap-area','ap-value','ap-year','ap-tags'].forEach(id=>document.getElementById(id).value='');
+    const btn = document.querySelector('#page-settings .form-btn');
+    if (btn) { btn.disabled=true; btn.textContent='Saving...'; }
+
+    try {
+      const projects = await getProjects();
+      const existingId = idx >= 0 && projects[idx] ? projects[idx].id : null;
+      await saveProjectToDB(project, existingId);
+      await renderAdminList();
+      await renderProjectsPage();
+      cancelEdit();
+      ['ap-name','ap-desc','ap-area','ap-value','ap-year','ap-tags'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+    } catch(e) {
+      alert('Failed to save project: ' + e.message);
+    }
+    if (btn) { btn.disabled=false; btn.textContent='Save Project'; }
   }
-  function editProject(i){
-    const p=getProjects()[i];
+
+  async function editProject(i){
+    const projects = await getProjects();
+    const p = projects[i];
+    if (!p) return;
     document.getElementById('editingIndex').value=i;
     document.getElementById('ap-name').value=p.name;
     document.getElementById('ap-desc').value=p.desc;
@@ -901,7 +1007,6 @@
     document.getElementById('ap-type').value=p.type;
     document.getElementById('ap-pkg').value=p.pkg;
     document.getElementById('ap-tags').value=(p.tags||[]).join(', ');
-    // Load photos array (support both old single img and new imgs array)
     if(p.imgs && p.imgs.length) { currentPhotos=[...p.imgs]; }
     else if(p.img) { currentPhotos=[p.img]; }
     else { currentPhotos=[]; }
@@ -911,6 +1016,7 @@
     document.getElementById('cancelEditBtn').style.display='block';
     document.querySelector('.admin-add-form').scrollIntoView({behavior:'smooth'});
   }
+
   function cancelEdit(){
     document.getElementById('editingIndex').value=-1;
     document.getElementById('addFormTitle').textContent='Add New Project';
@@ -920,8 +1026,20 @@
     document.getElementById('ap-img-file').value='';
     renderPhotoGrid();
   }
-  function deleteProject(i){if(!confirm('Delete this project?'))return;const projects=getProjects();projects.splice(i,1);saveProjects(projects);renderAdminList();renderProjectsPage();}
-  function goToFinalize() {
+
+  async function deleteProject(i){
+    if(!confirm('Delete this project?')) return;
+    const projects = await getProjects();
+    const p = projects[i];
+    if (!p) return;
+    try {
+      if (p.id) await deleteProjectFromDB(p.id);
+      await renderAdminList();
+      await renderProjectsPage();
+    } catch(e) {
+      alert('Failed to delete: ' + e.message);
+    }
+  }  function goToFinalize() {
     // Collect all data directly from the quote form
     const name   = document.getElementById('clientName').value.trim() || '—';
     const phone  = document.getElementById('clientPhone').value.trim() || '—';
