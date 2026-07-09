@@ -319,7 +319,7 @@
     document.getElementById('client-view').style.display = 'block';
     document.querySelectorAll('.nav-btn').forEach(b => b.style.display='none');
     const cta = document.querySelector('.nav-cta'); if (cta) cta.style.display='none';
-    const trigger = document.querySelector('.admin-trigger'); if (trigger) trigger.style.display='none';
+    const trigger = document.querySelector('.profile-trigger'); if (trigger) trigger.style.display='none';
 
     const pkg   = data.pkg || 'standard';
     const area  = parseInt(data.a) || 0;
@@ -994,7 +994,7 @@
     document.getElementById('client-view').style.display = 'none';
     document.querySelectorAll('.nav-btn').forEach(b => b.style.display='none');
     const cta = document.querySelector('.nav-cta'); if (cta) cta.style.display='none';
-    const adminBtn = document.querySelector('.admin-trigger'); if (adminBtn) adminBtn.style.display='none';
+    const adminBtn = document.querySelector('.profile-trigger'); if (adminBtn) adminBtn.style.display='none';
 
     const gate = document.createElement('div');
     gate.id = 'phoneGateOverlay';
@@ -2010,7 +2010,7 @@ OTHER WORKS
     document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
     const navEl = document.querySelector('nav');
     if (navEl) navEl.style.display = 'none';
-    const adminBtn = document.querySelector('.admin-trigger');
+    const adminBtn = document.querySelector('.profile-trigger');
     if (adminBtn) adminBtn.style.display = 'none';
 
     const wrap = document.createElement('div');
@@ -2055,7 +2055,7 @@ OTHER WORKS
     document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
     const navEl = document.querySelector('nav');
     if (navEl) navEl.style.display = 'none';
-    const adminBtn = document.querySelector('.admin-trigger');
+    const adminBtn = document.querySelector('.profile-trigger');
     if (adminBtn) adminBtn.style.display = 'none';
 
     const tierRows = Object.entries(FC_TIERS).map(([key, t]) => `
