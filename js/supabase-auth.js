@@ -124,7 +124,7 @@ function showApp() {
 
   // Reveal nav and settings trigger
   const nav = document.querySelector('nav');
-  const trigger = document.querySelector('.admin-trigger');
+  const trigger = document.querySelector('.profile-trigger');
   if (nav) { nav.style.visibility = 'visible'; nav.style.pointerEvents = 'auto'; }
   if (trigger) { trigger.style.display = 'flex'; trigger.style.pointerEvents = 'auto'; }
 
@@ -153,7 +153,7 @@ function showLandingPage() {
   // Hide all app pages and nav
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const nav = document.querySelector('nav');
-  const trigger = document.querySelector('.admin-trigger');
+  const trigger = document.querySelector('.profile-trigger');
   if (nav) nav.style.visibility = 'hidden';
   if (trigger) trigger.style.display = 'none';
 
