@@ -1868,27 +1868,83 @@
     if(tt) tt.value=getSpecsText('terms');
   }
 
+  let pendingLogoFile = null; // holds the File object until Save is tapped
+
   function handleSettingsLogo(event) {
-    const file=event.target.files[0]; if(!file) return;
-    const reader=new FileReader();
-    reader.onload=function(e){
-      const img=document.getElementById('settingsLogoImg'); const ph=document.getElementById('settingsLogoPlaceholder');
-      if(img){img.src=e.target.result;img.style.display='block';} if(ph) ph.style.display='none';
-    }; reader.readAsDataURL(file);
+    const file = event.target.files[0]; if (!file) return;
+    pendingLogoFile = file;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = document.getElementById('settingsLogoImg');
+      const ph  = document.getElementById('settingsLogoPlaceholder');
+      if (img) { img.src = e.target.result; img.style.display = 'block'; }
+      if (ph) ph.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
   }
 
-  function saveSettings() {
-    const cfg=getConfig(); const get=id=>(document.getElementById(id)||{}).value||'';
-    const phone=get('cfg-phone').trim(); const waNumber=phone.replace(/\D/g,'')||cfg.waNumber;
-    const logoImg=document.getElementById('settingsLogoImg');
-    const logo=(logoImg&&logoImg.src&&logoImg.src.startsWith('data:'))?logoImg.src:cfg.logo;
-    const updated=Object.assign({},cfg,{
-      company:get('cfg-company').trim()||cfg.company, tagline:get('cfg-tagline').trim()||cfg.tagline,
-      phone, email:get('cfg-email').trim(), city:get('cfg-city').trim(), logo, waNumber
+  async function uploadLogoToStorage(file) {
+    const SUPABASE_URL = 'https://gmpamjblvnbiqwbkzmtp.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
+    const ext = file.name.split('.').pop() || 'png';
+    const path = `${window.SB_COMPANY_ID}/logo.${ext}`;
+    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/logos/${path}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + window.SB_SESSION.access_token,
+        'Content-Type': file.type,
+        'x-upsert': 'true'
+      },
+      body: file
     });
-    saveConfig(updated); applyConfig();
-    const msg=document.getElementById('settingsSavedMsg');
-    if(msg){msg.style.display='block';setTimeout(()=>msg.style.display='none',3000);}
+    if (!res.ok) throw new Error('Logo upload failed: ' + res.status);
+    // Return the public URL
+    return `${SUPABASE_URL}/storage/v1/object/public/logos/${path}`;
+  }
+
+  async function saveSettings() {
+    const cfg = getConfig();
+    const get = id => (document.getElementById(id) || {}).value || '';
+    const phone = get('cfg-phone').trim();
+    const waNumber = phone.replace(/\D/g, '') || cfg.waNumber;
+
+    const btn = document.querySelector('.settings-save-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+
+    let logo = cfg.logo;
+
+    // Upload logo to Storage if a new file was selected
+    if (pendingLogoFile && window.SB_SESSION) {
+      try {
+        logo = await uploadLogoToStorage(pendingLogoFile);
+        pendingLogoFile = null;
+      } catch(e) {
+        console.warn('[SB] Logo upload failed, keeping existing:', e);
+        // Fall back to base64 preview
+        const logoImg = document.getElementById('settingsLogoImg');
+        if (logoImg && logoImg.src && logoImg.src.startsWith('data:')) logo = logoImg.src;
+      }
+    } else {
+      // No new file — keep existing or use base64 preview
+      const logoImg = document.getElementById('settingsLogoImg');
+      if (logoImg && logoImg.src && logoImg.src.startsWith('data:')) logo = logoImg.src;
+    }
+
+    const updated = Object.assign({}, cfg, {
+      company:  get('cfg-company').trim()  || cfg.company,
+      tagline:  get('cfg-tagline').trim()  || cfg.tagline,
+      phone, email: get('cfg-email').trim(),
+      city: get('cfg-city').trim(),
+      logo, waNumber
+    });
+
+    saveConfig(updated);
+    applyConfig();
+
+    if (btn) { btn.disabled = false; btn.textContent = '💾 Save Profile'; }
+    const msg = document.getElementById('settingsSavedMsg');
+    if (msg) { msg.style.display = 'block'; setTimeout(() => msg.style.display = 'none', 3000); }
   }
 
   function checkPin() {
