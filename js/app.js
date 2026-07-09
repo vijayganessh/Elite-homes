@@ -1683,14 +1683,22 @@
       const parts=cfg.company.split(' '); const first=parts[0]; const rest=parts.slice(1).join(' ');
       navLogo.innerHTML=(cfg.logo?`<img src="${cfg.logo}" style="height:38px;width:38px;object-fit:contain;border-radius:6px"/>`:'')
         +`<span style="color:var(--gold)">${first} <span style="color:var(--text)">${rest}</span></span>`;
+      navLogo.onclick = function(){ showPage('quote', document.getElementById('nav-quote')); };
     }
     document.querySelectorAll('.footer-contact').forEach(el=>{
       el.innerHTML=`<strong>${cfg.phone}</strong> &nbsp;|&nbsp; ${cfg.email}`;
     });
     document.querySelectorAll('.footer-logo span, .footer-company-name').forEach(el=>{ el.textContent=cfg.company; });
-
     document.title=cfg.company+' — '+cfg.tagline;
     document.querySelectorAll('a[href*="wa.me"]').forEach(a=>{ a.href=`https://wa.me/${cfg.waNumber}`; });
+
+    // Update profile button initials
+    const initials = cfg.company
+      .split(' ').filter(Boolean)
+      .map(w => w[0].toUpperCase())
+      .slice(0, 2).join('');
+    const profileEl = document.getElementById('profileInitials');
+    if (profileEl) profileEl.textContent = initials || 'ME';
   }
 
   function checkFirstLaunch() {
