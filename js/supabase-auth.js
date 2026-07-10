@@ -230,8 +230,8 @@ function injectLandingPage() {
       <h1>Professional Quotes<br/>for <em>Construction Contractors</em></h1>
       <p>Stop sending unformatted WhatsApp messages. Generate beautiful, branded construction quotes, false ceiling quotes, and work orders — in seconds.</p>
       <div class="lp-cta-row">
-        <button class="lp-cta-primary" onclick="showLoginModal()">Get Started →</button>
-        <button class="lp-cta-secondary" onclick="showLoginModal()">Sign In</button>
+        <button class="lp-cta-primary" onclick="showLoginModal('signup')">Get Started Free →</button>
+        <button class="lp-cta-secondary" onclick="showLoginModal('signin')">Sign In</button>
       </div>
     </div>
 
@@ -290,7 +290,7 @@ function injectLandingPage() {
             <li>False ceiling quotes</li>
             <li>Company branding</li>
           </ul>
-          <button class="lp-plan-btn" onclick="showLoginModal()">Get Started Free</button>
+          <button class="lp-plan-btn" onclick="showLoginModal('signup')">Get Started Free</button>
         </div>
         <div class="lp-plan featured">
           <div class="lp-plan-badge">⭐ Most Popular</div>
@@ -304,7 +304,7 @@ function injectLandingPage() {
             <li>All features included</li>
             <li>Priority support</li>
           </ul>
-          <button class="lp-plan-btn" onclick="showLoginModal()">Start Now</button>
+          <button class="lp-plan-btn" onclick="showLoginModal('signup')">Start Now</button>
         </div>
         <div class="lp-plan">
           <div class="lp-plan-badge">Unlimited</div>
@@ -318,7 +318,7 @@ function injectLandingPage() {
             <li>All features included</li>
             <li>Priority support</li>
           </ul>
-          <button class="lp-plan-btn" onclick="showLoginModal()">Subscribe</button>
+          <button class="lp-plan-btn" onclick="showLoginModal('signup')">Subscribe</button>
         </div>
       </div>
     </div>
@@ -333,39 +333,146 @@ function injectLandingPage() {
 
 // ── Login modal ───────────────────────────────────────────────
 
-function showLoginModal() {
+function showLoginModal(tab) {
+  tab = tab || 'signin';
   let modal = document.getElementById('sb-login-modal');
   if (!modal) {
     modal = document.createElement('div');
     modal.id = 'sb-login-modal';
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px';
-    modal.innerHTML = `
-      <div style="background:#1a1a1a;border:1px solid rgba(201,168,76,0.3);border-radius:20px;padding:36px 28px;max-width:400px;width:100%;position:relative">
-        <button onclick="document.getElementById('sb-login-modal').style.display='none'" style="position:absolute;top:14px;right:16px;background:transparent;border:none;color:#666;font-size:1.2rem;cursor:pointer">✕</button>
-        <div style="text-align:center;margin-bottom:28px">
-          <div style="font-size:2rem">🏗️</div>
-          <h2 style="font-family:'Playfair Display',serif;color:#c9a84c;margin:8px 0 4px;font-size:1.5rem">Welcome back</h2>
-          <p style="color:#888;font-size:0.85rem;margin:0">Sign in to your contractor account</p>
-        </div>
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto';
+    document.body.appendChild(modal);
+  }
+  modal.style.display = 'flex';
+
+  const inputStyle = 'width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:#f0f0f0;font-size:0.95rem;box-sizing:border-box;font-family:inherit';
+  const labelStyle = 'display:block;font-size:0.75rem;font-weight:700;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em';
+  const tabActive = 'padding:10px 20px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.9rem;background:#c9a84c;color:#000';
+  const tabInactive = 'padding:10px 20px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.9rem;background:transparent;color:#888';
+
+  modal.innerHTML = `
+    <div style="background:#1a1a1a;border:1px solid rgba(201,168,76,0.3);border-radius:20px;padding:32px 28px;max-width:420px;width:100%;position:relative;max-height:90vh;overflow-y:auto">
+      <button onclick="document.getElementById('sb-login-modal').style.display='none'" style="position:absolute;top:14px;right:16px;background:transparent;border:none;color:#666;font-size:1.2rem;cursor:pointer">✕</button>
+
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="font-size:2rem">🏗️</div>
+        <h2 style="font-family:'Playfair Display',serif;color:#c9a84c;margin:8px 0 0;font-size:1.4rem">QuoteBuilder</h2>
+      </div>
+
+      <!-- TABS -->
+      <div style="display:flex;gap:6px;background:rgba(255,255,255,0.05);border-radius:10px;padding:4px;margin-bottom:24px">
+        <button id="tab-signin" style="${tab==='signin'?tabActive:tabInactive};flex:1;border-radius:7px" onclick="showLoginModal('signin')">Sign In</button>
+        <button id="tab-signup" style="${tab==='signup'?tabActive:tabInactive};flex:1;border-radius:7px" onclick="showLoginModal('signup')">Sign Up</button>
+      </div>
+
+      <!-- SIGN IN FORM -->
+      <div id="sb-signin-form" style="display:${tab==='signin'?'block':'none'}">
         <div style="margin-bottom:14px">
-          <label style="display:block;font-size:0.75rem;font-weight:700;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em">Email</label>
-          <input id="sb-login-email" type="email" placeholder="you@example.com"
-            style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:#f0f0f0;font-size:0.95rem;box-sizing:border-box"
+          <label style="${labelStyle}">Email</label>
+          <input id="sb-login-email" type="email" placeholder="you@example.com" style="${inputStyle}"
             onkeydown="if(event.key==='Enter')document.getElementById('sb-login-password').focus()">
         </div>
         <div style="margin-bottom:20px">
-          <label style="display:block;font-size:0.75rem;font-weight:700;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em">Password</label>
-          <input id="sb-login-password" type="password" placeholder="password"
-            style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:#f0f0f0;font-size:0.95rem;box-sizing:border-box"
+          <label style="${labelStyle}">Password</label>
+          <input id="sb-login-password" type="password" placeholder="password" style="${inputStyle}"
             onkeydown="if(event.key==='Enter')sbDoLogin()">
         </div>
         <button onclick="sbDoLogin()" id="sb-login-btn" style="width:100%;padding:14px;border-radius:12px;border:none;background:#c9a84c;color:#000;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit">Sign In</button>
         <div id="sb-login-error" style="display:none;margin-top:12px;padding:10px 12px;border-radius:8px;background:rgba(239,68,68,0.1);border:1px solid #ef4444;color:#fca5a5;font-size:0.85rem"></div>
+        <p style="text-align:center;margin-top:16px;font-size:0.82rem;color:#666">Don't have an account? <a href="#" onclick="showLoginModal('signup');return false" style="color:#c9a84c">Sign up free</a></p>
       </div>
+
+      <!-- SIGN UP FORM -->
+      <div id="sb-signup-form" style="display:${tab==='signup'?'block':'none'}">
+        <div style="margin-bottom:14px">
+          <label style="${labelStyle}">Your Name</label>
+          <input id="sb-signup-name" type="text" placeholder="e.g. Rajesh Kumar" style="${inputStyle}">
+        </div>
+        <div style="margin-bottom:14px">
+          <label style="${labelStyle}">Company Name</label>
+          <input id="sb-signup-company" type="text" placeholder="e.g. Elite Homes" style="${inputStyle}">
+        </div>
+        <div style="margin-bottom:14px">
+          <label style="${labelStyle}">Email</label>
+          <input id="sb-signup-email" type="email" placeholder="you@example.com" style="${inputStyle}">
+        </div>
+        <div style="margin-bottom:20px">
+          <label style="${labelStyle}">Password <span style="color:#666;font-weight:400;text-transform:none">(min 8 characters)</span></label>
+          <input id="sb-signup-password" type="password" placeholder="choose a strong password" style="${inputStyle}"
+            onkeydown="if(event.key==='Enter')sbDoSignUp()">
+        </div>
+        <button onclick="sbDoSignUp()" id="sb-signup-btn" style="width:100%;padding:14px;border-radius:12px;border:none;background:#c9a84c;color:#000;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit">Create Free Account</button>
+        <div id="sb-signup-error" style="display:none;margin-top:12px;padding:10px 12px;border-radius:8px;background:rgba(239,68,68,0.1);border:1px solid #ef4444;color:#fca5a5;font-size:0.85rem"></div>
+        <div id="sb-signup-success" style="display:none;margin-top:12px;padding:14px;border-radius:8px;background:rgba(16,185,129,0.1);border:1px solid #10b981;color:#6ee7b7;font-size:0.85rem;line-height:1.6"></div>
+        <p style="text-align:center;margin-top:16px;font-size:0.82rem;color:#666">Already have an account? <a href="#" onclick="showLoginModal('signin');return false" style="color:#c9a84c">Sign in</a></p>
+      </div>
+    </div>
+  `;
+}
+
+// ── Sign up action ────────────────────────────────────────────
+
+async function sbDoSignUp() {
+  const name     = (document.getElementById('sb-signup-name')     || {}).value || '';
+  const company  = (document.getElementById('sb-signup-company')  || {}).value || '';
+  const email    = (document.getElementById('sb-signup-email')    || {}).value || '';
+  const password = (document.getElementById('sb-signup-password') || {}).value || '';
+  const errEl    = document.getElementById('sb-signup-error');
+  const successEl= document.getElementById('sb-signup-success');
+  const btn      = document.getElementById('sb-signup-btn');
+
+  errEl.style.display = 'none';
+  successEl.style.display = 'none';
+
+  if (!name || !company || !email || !password) {
+    errEl.textContent = 'Please fill in all fields.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (password.length < 8) {
+    errEl.textContent = 'Password must be at least 8 characters.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Creating account…';
+
+  try {
+    // Create Supabase auth user
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        password,
+        data: { full_name: name, company_name: company }
+      })
+    });
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error_description || data.msg || data.message || 'Sign up failed');
+
+    // The DB trigger (22_auto_create_company_trigger.sql) will auto-create
+    // the company row when the user is confirmed.
+
+    // Show success — they need to verify email before logging in
+    successEl.innerHTML = `
+      ✅ <strong>Account created!</strong><br><br>
+      We've sent a verification email to <strong>${email}</strong>.<br><br>
+      Click the link in that email to activate your account, then come back here and sign in.
     `;
-    document.body.appendChild(modal);
-  } else {
-    modal.style.display = 'flex';
+    successEl.style.display = 'block';
+    btn.textContent = 'Check your email ✉️';
+
+    // After company is verified, update company name from signup data
+    // This happens via the trigger — company name defaults to "My Company"
+    // The setup wizard will let them customise it on first login.
+
+  } catch (err) {
+    errEl.textContent = '❌ ' + err.message;
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Create Free Account';
   }
 }
 
@@ -459,6 +566,39 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Always inject landing page first
   injectLandingPage();
 
+  // Check if this is an email confirmation redirect
+  // Supabase sends: #access_token=...&type=signup or ?type=recovery etc.
+  const hash = new URLSearchParams(window.location.hash.replace('#', ''));
+  const hashType = hash.get('type');
+  const accessToken = hash.get('access_token');
+
+  if (hashType === 'signup' && accessToken) {
+    // User just confirmed their email — log them in automatically
+    try {
+      window.SB_SESSION = { access_token: accessToken, user: { id: hash.get('user_id') || '' } };
+      // Get full user info
+      const userRes = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + accessToken }
+      });
+      if (userRes.ok) {
+        const userData = await userRes.json();
+        window.SB_SESSION.user = userData;
+      }
+      localStorage.setItem('sb_session', JSON.stringify(window.SB_SESSION));
+      await loadCompanyConfig();
+      await loadSpecsFromDB();
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      showApp();
+      return;
+    } catch(e) {
+      console.warn('[SB] Email confirmation auto-login failed:', e);
+      // Fall through to show landing with sign-in modal
+      showLoginModal('signin');
+      return;
+    }
+  }
+
   // Check if this is a client quote link — skip auth if so
   if (checkQuoteParam()) return;
 
@@ -478,6 +618,5 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   }
 
-  // No session — show landing page (already injected above)
-  // User taps Sign In to get the login modal
+  // No session — landing page is already showing
 });
