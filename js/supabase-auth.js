@@ -438,7 +438,6 @@ async function sbDoSignUp() {
   btn.textContent = 'Creating account…';
 
   try {
-    // Create Supabase auth user
     const res = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
       method: 'POST',
       headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
@@ -452,10 +451,22 @@ async function sbDoSignUp() {
 
     if (!res.ok) throw new Error(data.error_description || data.msg || data.message || 'Sign up failed');
 
-    // The DB trigger (22_auto_create_company_trigger.sql) will auto-create
-    // the company row when the user is confirmed.
+    // If email confirmation is OFF, Supabase returns access_token immediately
+    if (data.access_token) {
+      window.SB_SESSION = { access_token: data.access_token, user: data.user };
+      localStorage.setItem('sb_session', JSON.stringify(window.SB_SESSION));
+      btn.textContent = 'Setting up your account…';
 
-    // Show success — they need to verify email before logging in
+      // Wait a moment for the trigger to create the company row
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      await loadCompanyConfig();
+      await loadSpecsFromDB();
+      showApp();
+      return;
+    }
+
+    // Email confirmation is ON — show check email message
     successEl.innerHTML = `
       ✅ <strong>Account created!</strong><br><br>
       We've sent a verification email to <strong>${email}</strong>.<br><br>
@@ -463,10 +474,6 @@ async function sbDoSignUp() {
     `;
     successEl.style.display = 'block';
     btn.textContent = 'Check your email ✉️';
-
-    // After company is verified, update company name from signup data
-    // This happens via the trigger — company name defaults to "My Company"
-    // The setup wizard will let them customise it on first login.
 
   } catch (err) {
     errEl.textContent = '❌ ' + err.message;
