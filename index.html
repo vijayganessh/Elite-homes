@@ -25,6 +25,7 @@
     <button class="nav-btn" id="nav-finalize" onclick="showPage('finalize',this);closeMenu()" style="display:none">Finalize Quote</button>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
+    <span id="tokenBadge" onclick="showPage('settings',document.getElementById('nav-settings'))" title="Token balance" style="font-size:0.72rem;font-weight:700;padding:4px 10px;border-radius:999px;cursor:pointer;background:rgba(201,168,76,0.15);color:var(--gold);border:1px solid rgba(201,168,76,0.4);display:none"></span>
     <button class="nav-hamburger" id="navHamburger" onclick="toggleMenu()" aria-label="Menu">☰</button>
     <button class="profile-trigger" id="profileTrigger" title="Account & Settings" onclick="toggleSettings()">
       <span id="profileInitials">EH</span>
