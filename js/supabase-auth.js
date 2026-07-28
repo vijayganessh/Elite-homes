@@ -140,6 +140,13 @@ function showApp() {
   setTimeout(function() {
     if (typeof buildFloorInputs === 'function') buildFloorInputs();
     if (typeof updatePreview === 'function') updatePreview();
+    // Load token balance and show badge
+    if (typeof loadTokenBalance === 'function') {
+      loadTokenBalance().then(() => {
+        const badge = document.getElementById('tokenBadge');
+        if (badge) badge.style.display = 'inline-block';
+      });
+    }
   }, 100);
 
   // Setup wizard if needed
