@@ -144,6 +144,258 @@
   // ── PAGE NAV ──────────────────────────────────────────
   let currentPage = 'quote';
 
+  // ── TOKEN SYSTEM ─────────────────────────────────────────
+  const SUPABASE_URL_T = 'https://gmpamjblvnbiqwbkzmtp.supabase.co';
+  const SUPABASE_KEY_T = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
+  const FREE_QUOTES    = 2;
+  const FREE_FINALS    = 3;
+  const TOKEN_COST     = 50;
+
+  // Load token balance from Supabase and update nav display
+  async function loadTokenBalance() {
+    if (!window.SB_SESSION || !window.SB_COMPANY_ID) return;
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL_T}/rest/v1/companies?select=token_balance,quotes_generated,quotes_finalized,subscription_active,subscription_expires_at&id=eq.${window.SB_COMPANY_ID}`,
+        { headers: { 'apikey': SUPABASE_KEY_T, 'Authorization': 'Bearer ' + window.SB_SESSION.access_token } }
+      );
+      const rows = await res.json();
+      if (!rows || !rows[0]) return;
+      const co = rows[0];
+      window.SB_TOKENS = co;
+      updateTokenBadge(co);
+    } catch(e) { console.warn('[Token] loadTokenBalance failed:', e); }
+  }
+
+  function updateTokenBadge(co) {
+    let badge = document.getElementById('tokenBadge');
+    if (!badge) return;
+    const isSubscribed = co.subscription_active &&
+      (!co.subscription_expires_at || new Date(co.subscription_expires_at) > new Date());
+    if (isSubscribed) {
+      badge.textContent = '∞';
+      badge.title = 'Unlimited subscription active';
+      badge.style.background = 'rgba(16,185,129,0.2)';
+      badge.style.color = '#10b981';
+      badge.style.border = '1px solid #10b981';
+    } else {
+      const freeQLeft = Math.max(0, FREE_QUOTES - (co.quotes_generated || 0));
+      const freeFLeft = Math.max(0, FREE_FINALS - (co.quotes_finalized || 0));
+      const total = (co.token_balance || 0);
+      if (freeQLeft > 0 || freeFLeft > 0) {
+        badge.textContent = `Free`;
+        badge.title = `${freeQLeft} free quotes, ${freeFLeft} free finalizations remaining`;
+        badge.style.background = 'rgba(201,168,76,0.15)';
+        badge.style.color = 'var(--gold)';
+        badge.style.border = '1px solid rgba(201,168,76,0.4)';
+      } else {
+        badge.textContent = `${total} tkn`;
+        badge.title = `${total} tokens remaining`;
+        badge.style.background = total > 0 ? 'rgba(201,168,76,0.15)' : 'rgba(239,68,68,0.15)';
+        badge.style.color = total > 0 ? 'var(--gold)' : '#ef4444';
+        badge.style.border = total > 0 ? '1px solid rgba(201,168,76,0.4)' : '1px solid #ef4444';
+      }
+    }
+  }
+
+  // Check if action is allowed — returns true if allowed, shows paywall if not
+  async function checkTokens(action) {
+    if (!window.SB_SESSION || !window.SB_COMPANY_ID) return true; // offline fallback
+    try {
+      const res = await fetch(`${SUPABASE_URL_T}/rest/v1/rpc/consume_tokens`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY_T,
+          'Authorization': 'Bearer ' + window.SB_SESSION.access_token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ p_company_id: window.SB_COMPANY_ID, p_amount: TOKEN_COST })
+      });
+      const result = await res.json();
+      if (result && result.allowed) {
+        await loadTokenBalance(); // refresh badge
+        return true;
+      }
+      showPaywall(action);
+      return false;
+    } catch(e) {
+      console.warn('[Token] checkTokens failed:', e);
+      return true; // fail open
+    }
+  }
+
+  // ── PAYWALL ───────────────────────────────────────────────
+  function showPaywall(action) {
+    const existing = document.getElementById('sb-paywall');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'sb-paywall';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px';
+
+    overlay.innerHTML = `
+      <div style="background:#1a1a1a;border:1px solid rgba(201,168,76,0.3);border-radius:20px;padding:32px 28px;max-width:480px;width:100%;position:relative">
+        <button onclick="document.getElementById('sb-paywall').remove()" style="position:absolute;top:14px;right:16px;background:transparent;border:none;color:#666;font-size:1.2rem;cursor:pointer">✕</button>
+
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="font-size:2.5rem;margin-bottom:8px">🔓</div>
+          <h2 style="font-family:'Playfair Display',serif;color:#c9a84c;margin:0 0 8px;font-size:1.4rem">Upgrade to Continue</h2>
+          <p style="color:#888;font-size:0.85rem;margin:0">You've used your free ${action === 'quote' ? 'quote generations' : 'finalizations'}. Choose a plan to continue.</p>
+        </div>
+
+        <!-- Token packages -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:14px;padding:18px;text-align:center">
+            <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:#888;margin-bottom:8px">Pay as you go</div>
+            <div style="font-size:1.6rem;font-weight:900;color:#c9a84c">₹100</div>
+            <div style="font-size:0.78rem;color:#888;margin:4px 0 14px">= 100 tokens</div>
+            <div style="font-size:0.75rem;color:#aaa;margin-bottom:14px">1 quote or finalization = 50 tokens</div>
+            <button onclick="initiatePayment(100,'tokens',100)" style="width:100%;padding:10px;border-radius:10px;border:none;background:#c9a84c;color:#000;font-weight:800;cursor:pointer;font-family:inherit;font-size:0.85rem">Buy ₹100</button>
+          </div>
+          <div style="background:#1c1a14;border:2px solid rgba(201,168,76,0.5);border-radius:14px;padding:18px;text-align:center;position:relative">
+            <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#c9a84c;color:#000;font-size:0.65rem;font-weight:800;padding:3px 10px;border-radius:999px;white-space:nowrap">⭐ BEST VALUE</div>
+            <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:#888;margin-bottom:8px">Monthly</div>
+            <div style="font-size:1.6rem;font-weight:900;color:#c9a84c">₹499</div>
+            <div style="font-size:0.78rem;color:#888;margin:4px 0 14px">/month</div>
+            <div style="font-size:0.75rem;color:#aaa;margin-bottom:14px">Unlimited quotes & finalizations</div>
+            <button onclick="initiatePayment(499,'subscription',0)" style="width:100%;padding:10px;border-radius:10px;border:none;background:#c9a84c;color:#000;font-weight:800;cursor:pointer;font-family:inherit;font-size:0.85rem">Subscribe ₹499</button>
+          </div>
+        </div>
+
+        <div id="paywall-status" style="display:none;margin-top:12px;padding:10px 12px;border-radius:8px;font-size:0.85rem;text-align:center"></div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  }
+
+  // ── RAZORPAY CHECKOUT ────────────────────────────────────
+  async function initiatePayment(amount_inr, plan, tokens) {
+    const statusEl = document.getElementById('paywall-status');
+    statusEl.style.display = 'block';
+    statusEl.style.background = 'rgba(255,255,255,0.05)';
+    statusEl.style.color = '#aaa';
+    statusEl.textContent = 'Creating order…';
+
+    try {
+      // Load Razorpay script if not already loaded
+      if (!window.Razorpay) {
+        await new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+          s.onload = resolve; s.onerror = reject;
+          document.head.appendChild(s);
+        });
+      }
+
+      // Call Edge Function to create order
+      const orderRes = await fetch(
+        `${SUPABASE_URL_T}/functions/v1/create-order`,
+        {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_KEY_T,
+            'Authorization': 'Bearer ' + window.SB_SESSION.access_token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            amount_paise: amount_inr * 100,
+            receipt: `rcpt_${window.SB_COMPANY_ID}_${Date.now()}`,
+            company_id: window.SB_COMPANY_ID
+          })
+        }
+      );
+      const orderData = await orderRes.json();
+      if (!orderData.order_id) throw new Error(orderData.error || 'Order creation failed');
+
+      statusEl.textContent = 'Opening payment…';
+
+      const cfg = typeof getConfig === 'function' ? getConfig() : {};
+
+      // Open Razorpay modal
+      const rzp = new window.Razorpay({
+        key:         orderData.key_id,
+        amount:      orderData.amount,
+        currency:    orderData.currency,
+        order_id:    orderData.order_id,
+        name:        'QuoteBuilder',
+        description: plan === 'subscription' ? 'Monthly Unlimited Plan' : `${tokens} Tokens`,
+        prefill: {
+          name:  cfg.company || '',
+          email: cfg.email   || '',
+        },
+        theme: { color: '#c9a84c' },
+        handler: async function(response) {
+          statusEl.textContent = 'Verifying payment…';
+          await verifyAndCreditTokens(response, plan, tokens, amount_inr * 100);
+        },
+        modal: {
+          ondismiss: function() {
+            statusEl.style.background = 'rgba(239,68,68,0.1)';
+            statusEl.style.color = '#fca5a5';
+            statusEl.textContent = 'Payment cancelled.';
+          }
+        }
+      });
+      rzp.on('payment.failed', function(response) {
+        statusEl.style.background = 'rgba(239,68,68,0.1)';
+        statusEl.style.color = '#fca5a5';
+        statusEl.textContent = '❌ Payment failed: ' + (response.error?.description || 'Unknown error');
+      });
+      rzp.open();
+
+    } catch(err) {
+      statusEl.style.background = 'rgba(239,68,68,0.1)';
+      statusEl.style.color = '#fca5a5';
+      statusEl.textContent = '❌ ' + err.message;
+    }
+  }
+
+  async function verifyAndCreditTokens(response, plan, tokens, amount_paise) {
+    const statusEl = document.getElementById('paywall-status');
+    try {
+      const verifyRes = await fetch(
+        `${SUPABASE_URL_T}/functions/v1/verify-payment`,
+        {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_KEY_T,
+            'Authorization': 'Bearer ' + window.SB_SESSION.access_token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            razorpay_order_id:   response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature:  response.razorpay_signature,
+            company_id:          window.SB_COMPANY_ID,
+            tokens_to_credit:    tokens,
+            amount_paise:        amount_paise,
+            plan:                plan
+          })
+        }
+      );
+      const result = await verifyRes.json();
+      if (result.success) {
+        statusEl.style.background = 'rgba(16,185,129,0.1)';
+        statusEl.style.color = '#6ee7b7';
+        statusEl.textContent = plan === 'subscription'
+          ? '✅ Subscription activated! Unlimited access enabled.'
+          : `✅ ${tokens} tokens added to your account!`;
+        await loadTokenBalance();
+        // Close paywall after 2 seconds
+        setTimeout(() => {
+          const pw = document.getElementById('sb-paywall');
+          if (pw) pw.remove();
+        }, 2000);
+      } else {
+        throw new Error(result.error || 'Verification failed');
+      }
+    } catch(err) {
+      statusEl.style.background = 'rgba(239,68,68,0.1)';
+      statusEl.style.color = '#fca5a5';
+      statusEl.textContent = '❌ ' + err.message;
+    }
+  }
+
   function showPage(name, btn) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -245,7 +497,12 @@
   async function generateShareLink() {
     const name  = document.getElementById('clientName').value.trim();
     const phone = document.getElementById('clientPhone').value.trim();
-    const loc   = document.getElementById('clientLocation').value.trim();
+    if (!name) { alert('Please enter client name.'); return; }
+    if (!phone) { alert('Please enter client phone number (needed for secure quote access).'); return; }
+
+    // Check token allowance before proceeding
+    const allowed = await checkTokens('quote');
+    if (!allowed) return;
     const pkg   = document.getElementById('packageType').value;
     const area  = document.getElementById('builtArea').value;
     const floors= document.getElementById('numFloors').value;
@@ -1534,8 +1791,13 @@
   }
 
   // ── GENERATE FINAL QUOTE ──────────────────────────
-  function generateFinalQuote() {
+  async function generateFinalQuote() {
     if (!fqData) return;
+
+    // Check token allowance before generating
+    const allowed = await checkTokens('finalize');
+    if (!allowed) return;
+
     const cfg       = getConfig();
     const pkg       = fqData.pkg;
     const name      = fqData.name || '—';
@@ -1796,8 +2058,6 @@
     });
     document.querySelectorAll('.footer-logo span, .footer-company-name').forEach(el=>{ el.textContent=cfg.company; });
     document.title=cfg.company+' — '+cfg.tagline;
-    document.querySelectorAll('a[href*="wa.me"]').forEach(a=>{ a.href=`https://wa.me/${cfg.waNumber}`; });
-
     // Update profile button initials
     const initials = cfg.company
       .split(' ').filter(Boolean)
@@ -1805,6 +2065,12 @@
       .slice(0, 2).join('');
     const profileEl = document.getElementById('profileInitials');
     if (profileEl) profileEl.textContent = initials || 'ME';
+    // Show token badge and load balance
+    const badge = document.getElementById('tokenBadge');
+    if (badge && window.SB_SESSION) {
+      badge.style.display = 'inline-block';
+      loadTokenBalance();
+    }
   }
 
   function checkFirstLaunch() {
