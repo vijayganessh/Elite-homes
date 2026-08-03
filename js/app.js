@@ -198,11 +198,44 @@
     }
   }
 
-  // Check if action is allowed — returns true if allowed, shows paywall if not
-  async function checkTokens(action) {
-    if (!window.SB_SESSION || !window.SB_COMPANY_ID) return true; // offline fallback
+  // Check if action is allowed WITHOUT consuming — returns true/false
+  async function checkTokenAllowance(action) {
+    if (!window.SB_SESSION || !window.SB_COMPANY_ID) return true;
     try {
-      const res = await fetch(`${SUPABASE_URL_T}/rest/v1/rpc/consume_tokens`, {
+      const res = await fetch(
+        `${SUPABASE_URL_T}/rest/v1/companies?select=token_balance,quotes_generated,quotes_finalized,subscription_active,subscription_expires_at&id=eq.${window.SB_COMPANY_ID}`,
+        { headers: { 'apikey': SUPABASE_KEY_T, 'Authorization': 'Bearer ' + window.SB_SESSION.access_token } }
+      );
+      const rows = await res.json();
+      if (!rows || !rows[0]) return true;
+      const co = rows[0];
+
+      // Subscription active?
+      const isSubscribed = co.subscription_active &&
+        (!co.subscription_expires_at || new Date(co.subscription_expires_at) > new Date());
+      if (isSubscribed) return true;
+
+      // Free quota remaining?
+      if (action === 'quote' && (co.quotes_generated || 0) < FREE_QUOTES) return true;
+      if (action === 'finalize' && (co.quotes_finalized || 0) < FREE_FINALS) return true;
+
+      // Enough tokens?
+      if ((co.token_balance || 0) >= TOKEN_COST) return true;
+
+      // Nothing left — show paywall
+      showPaywall(action);
+      return false;
+    } catch(e) {
+      console.warn('[Token] checkTokenAllowance failed:', e);
+      return true; // fail open
+    }
+  }
+
+  // Consume token AFTER successful action
+  async function consumeToken(action) {
+    if (!window.SB_SESSION || !window.SB_COMPANY_ID) return;
+    try {
+      await fetch(`${SUPABASE_URL_T}/rest/v1/rpc/consume_tokens`, {
         method: 'POST',
         headers: {
           'apikey': SUPABASE_KEY_T,
@@ -211,17 +244,15 @@
         },
         body: JSON.stringify({ p_company_id: window.SB_COMPANY_ID, p_amount: TOKEN_COST })
       });
-      const result = await res.json();
-      if (result && result.allowed) {
-        await loadTokenBalance(); // refresh badge
-        return true;
-      }
-      showPaywall(action);
-      return false;
+      await loadTokenBalance();
     } catch(e) {
-      console.warn('[Token] checkTokens failed:', e);
-      return true; // fail open
+      console.warn('[Token] consumeToken failed:', e);
     }
+  }
+
+  // Legacy alias kept for any remaining calls
+  async function checkTokens(action) {
+    return checkTokenAllowance(action);
   }
 
   // ── PAYWALL ───────────────────────────────────────────────
@@ -237,10 +268,17 @@
       <div style="background:#1a1a1a;border:1px solid rgba(201,168,76,0.3);border-radius:20px;padding:32px 28px;max-width:480px;width:100%;position:relative">
         <button onclick="document.getElementById('sb-paywall').remove()" style="position:absolute;top:14px;right:16px;background:transparent;border:none;color:#666;font-size:1.2rem;cursor:pointer">✕</button>
 
-        <div style="text-align:center;margin-bottom:24px">
+        <div style="text-align:center;margin-bottom:20px">
           <div style="font-size:2.5rem;margin-bottom:8px">🔓</div>
           <h2 style="font-family:'Playfair Display',serif;color:#c9a84c;margin:0 0 8px;font-size:1.4rem">Upgrade to Continue</h2>
-          <p style="color:#888;font-size:0.85rem;margin:0">You've used your free ${action === 'quote' ? 'quote generations' : 'finalizations'}. Choose a plan to continue.</p>
+          <p style="color:#888;font-size:0.85rem;margin:0 0 12px">You've used your free ${action === 'quote' ? 'quote generations' : 'finalizations'}. Choose a plan to continue.</p>
+          <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:12px 14px;font-size:0.78rem;color:#aaa;line-height:1.7;text-align:left">
+            <strong style="color:#c9a84c">How tokens work:</strong><br>
+            ✦ Every new account gets <strong style="color:#f0f0f0">2 free quote generations</strong> + <strong style="color:#f0f0f0">3 free finalizations</strong><br>
+            ✦ After that, each action costs <strong style="color:#f0f0f0">50 tokens</strong><br>
+            ✦ ₹100 = 100 tokens = 2 quotes or finalizations<br>
+            ✦ Subscribe ₹499/month for unlimited access
+          </div>
         </div>
 
         <!-- Token packages -->
@@ -436,6 +474,30 @@
     if (specsTA) specsTA.value = getSpecsText('specs');
     if (termsTA) termsTA.value = getSpecsText('terms');
     if (typeof renderAdminList === 'function') await renderAdminList();
+
+    // Populate token balance section
+    const tokenInfoEl = document.getElementById('settingsTokenInfo');
+    if (tokenInfoEl && window.SB_TOKENS) {
+      const co = window.SB_TOKENS;
+      const isSubscribed = co.subscription_active &&
+        (!co.subscription_expires_at || new Date(co.subscription_expires_at) > new Date());
+      const freeQLeft = Math.max(0, FREE_QUOTES - (co.quotes_generated || 0));
+      const freeFLeft = Math.max(0, FREE_FINALS - (co.quotes_finalized || 0));
+      if (isSubscribed) {
+        const exp = co.subscription_expires_at ? new Date(co.subscription_expires_at).toLocaleDateString('en-IN') : 'N/A';
+        tokenInfoEl.innerHTML = `<strong style="color:#10b981">✅ Unlimited Subscription Active</strong><br>Expires: ${exp}<br>Unlimited quotes and finalizations.`;
+      } else {
+        tokenInfoEl.innerHTML = `
+          <strong style="color:var(--text)">Free quota remaining:</strong><br>
+          📄 Quote generations: <strong style="color:var(--gold)">${freeQLeft} of ${FREE_QUOTES}</strong><br>
+          ✅ Finalizations: <strong style="color:var(--gold)">${freeFLeft} of ${FREE_FINALS}</strong><br><br>
+          <strong style="color:var(--text)">Token balance:</strong> <strong style="color:var(--gold)">${co.token_balance || 0} tokens</strong><br>
+          <span style="font-size:0.78rem">50 tokens = 1 quote or finalization &nbsp;·&nbsp; ₹100 = 100 tokens</span>
+        `;
+      }
+    } else if (tokenInfoEl) {
+      await loadTokenBalance();
+    }
   }
 
   // ── LIVE PREVIEW ──────────────────────────────────────
@@ -497,12 +559,7 @@
   async function generateShareLink() {
     const name  = document.getElementById('clientName').value.trim();
     const phone = document.getElementById('clientPhone').value.trim();
-    if (!name) { alert('Please enter client name.'); return; }
-    if (!phone) { alert('Please enter client phone number (needed for secure quote access).'); return; }
-
-    // Check token allowance before proceeding
-    const allowed = await checkTokens('quote');
-    if (!allowed) return;
+    const loc   = document.getElementById('clientLocation').value.trim();
     const pkg   = document.getElementById('packageType').value;
     const area  = document.getElementById('builtArea').value;
     const floors= document.getElementById('numFloors').value;
@@ -516,20 +573,22 @@
     if (!phone) { alert('Please enter client phone number (needed for secure quote access).'); return; }
     if (!area || area <= 0) { alert('Please enter floor dimensions.'); return; }
 
-    const data = { n:name, p:phone, l:loc, pkg, a:area, f:floors, t:type, v:valid, nt:notes, dims, addons:addonData };
+    if (!window.SB_SESSION || !window.SB_COMPANY_ID) {
+      alert('You must be signed in to generate a shareable quote link.');
+      return;
+    }
+
+    // Check token allowance BEFORE saving — but only consume AFTER success
+    const canProceed = await checkTokenAllowance('quote');
+    if (!canProceed) return;
 
     const btn = event ? event.target : null;
     if (btn) { btn.disabled = true; btn.textContent = 'Saving quote...'; }
 
-    if (!window.SB_SESSION || !window.SB_COMPANY_ID) {
-      alert('You must be signed in to generate a shareable quote link.');
-      if (btn) { btn.disabled = false; btn.textContent = 'Generate Share Link'; }
-      return;
-    }
-
     try {
       const url = 'https://gmpamjblvnbiqwbkzmtp.supabase.co';
       const key = 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F';
+      const data = { n:name, p:phone, l:loc, pkg, a:area, f:floors, t:type, v:valid, nt:notes, dims, addons:addonData };
       const totalAmount = (parseFloat(area)||0) * (rates[pkg]||0) + addonData.reduce((s,a)=>s+(a.cost||0),0);
 
       const res = await fetch(`${url}/rest/v1/quotes`, {
@@ -556,6 +615,9 @@
       const rows = await res.json();
       const shortCode = rows[0].short_code;
 
+      // Quote saved successfully — NOW consume the token
+      await consumeToken('quote');
+
       const link = window.location.href.split('?')[0] + '?quote=' + shortCode;
       document.getElementById('shareLinkInput').value = link;
       document.getElementById('shareBox').classList.add('visible');
@@ -564,7 +626,7 @@
       alert('❌ Could not generate share link: ' + err.message);
     }
 
-    if (btn) { btn.disabled = false; btn.textContent = 'Generate Share Link'; }
+    if (btn) { btn.disabled = false; btn.textContent = '🔗 Generate Shareable Link'; }
   }
 
   function copyLink() {
@@ -1794,8 +1856,8 @@
   async function generateFinalQuote() {
     if (!fqData) return;
 
-    // Check token allowance before generating
-    const allowed = await checkTokens('finalize');
+    // Check allowance WITHOUT consuming — only consume after successful download
+    const allowed = await checkTokenAllowance('finalize');
     if (!allowed) return;
 
     const cfg       = getConfig();
@@ -2009,6 +2071,9 @@
     a.download = 'FinalQuote_' + name.replace(/\s+/g,'_') + '.html';
     a.click();
     URL.revokeObjectURL(url);
+
+    // Download succeeded — NOW consume the token
+    await consumeToken('finalize');
 
     // Show confirmation
     document.querySelector('.fq-finalize-btn').textContent = '✅ Final Quote Downloaded!';
