@@ -22,6 +22,7 @@
     <button class="nav-btn" id="nav-fc-finalize" onclick="showPage('fc-finalize',this);closeMenu()" style="display:none">Finalize FC</button>
     <button class="nav-btn" id="nav-packages" onclick="showPage('packages',this);closeMenu()">Packages</button>
     <button class="nav-btn" id="nav-projects" onclick="showPage('projects',this);closeMenu()">Portfolio</button>
+    <button class="nav-btn" id="nav-quotes" onclick="showPage('quotes',this);closeMenu()">My Quotes</button>
     <button class="nav-btn" id="nav-finalize" onclick="showPage('finalize',this);closeMenu()" style="display:none">Finalize Quote</button>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
@@ -803,6 +804,32 @@
     <button class="setup-start-btn" onclick="saveSetup()">Save &amp; Start Using →</button>
     <span class="setup-skip" onclick="skipSetup()">Skip for now, I'll set up later</span>
   </div>
+</div>
+
+<!-- ===================== PAGE: MY QUOTES ===================== -->
+<div class="page" id="page-quotes">
+  <div class="hero">
+    <h1>My <em>Quotes</em></h1>
+    <p>All quotes you've generated, with their status and shareable links.</p>
+  </div>
+  <div class="section" style="max-width:800px;margin:0 auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div style="display:flex;gap:8px" id="quotesFilterBtns">
+        <button onclick="filterQuotes('all',this)" class="quotes-filter-btn active">All</button>
+        <button onclick="filterQuotes('sent',this)" class="quotes-filter-btn">Sent</button>
+        <button onclick="filterQuotes('accepted',this)" class="quotes-filter-btn">Accepted</button>
+        <button onclick="filterQuotes('rejected',this)" class="quotes-filter-btn">Rejected</button>
+      </div>
+      <button onclick="showPage('quote',document.getElementById('nav-quote'))" style="padding:8px 16px;border-radius:8px;border:none;background:var(--gold);color:#000;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.82rem">+ New Quote</button>
+    </div>
+    <div id="quotesList">
+      <div class="empty-state">Loading quotes...</div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo" style="display:flex;align-items:center;gap:10px"><img src="assets/logo.png" style="height:40px;width:40px;object-fit:contain;border-radius:6px"/><span></span></div>
+    <div class="footer-contact"></div>
+  </footer>
 </div>
 
 <!-- SETTINGS PAGE -->
