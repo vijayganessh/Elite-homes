@@ -1092,3 +1092,38 @@
   border-bottom: 1px solid var(--border);
   grid-column: 1 / -1;
 }
+
+/* ═══ QUOTES DASHBOARD ═══ */
+.quotes-filter-btn {
+  padding:6px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.12);
+  background:transparent; color:var(--muted); cursor:pointer;
+  font-family:'DM Sans',sans-serif; font-size:0.8rem; font-weight:600;
+  transition:all 0.2s;
+}
+.quotes-filter-btn.active {
+  background:rgba(201,168,76,0.15); color:var(--gold);
+  border-color:rgba(201,168,76,0.4);
+}
+.quote-card {
+  background:var(--dark2); border:1px solid var(--border);
+  border-radius:14px; padding:18px 20px; margin-bottom:12px;
+  transition:border-color 0.2s;
+}
+.quote-card:hover { border-color:rgba(201,168,76,0.3); }
+.quote-card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+.quote-client-name { font-weight:700; font-size:1rem; color:var(--text); }
+.quote-status {
+  font-size:0.7rem; font-weight:700; padding:3px 10px;
+  border-radius:999px; text-transform:uppercase; letter-spacing:0.05em;
+}
+.status-sent     { background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); }
+.status-accepted { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); }
+.status-rejected { background:rgba(239,68,68,0.15);  color:#f87171; border:1px solid rgba(239,68,68,0.3); }
+.status-draft    { background:rgba(255,255,255,0.06); color:var(--muted); border:1px solid rgba(255,255,255,0.1); }
+.quote-meta { font-size:0.8rem; color:var(--muted); display:flex; gap:16px; flex-wrap:wrap; margin-bottom:12px; }
+.quote-card-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.quote-action-btn {
+  padding:6px 12px; border-radius:8px; font-size:0.78rem;
+  font-weight:600; cursor:pointer; font-family:inherit;
+  transition:all 0.2s;
+}
