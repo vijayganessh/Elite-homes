@@ -444,6 +444,109 @@
     currentPage = name;
     if (name === 'projects') renderProjectsPage();
     if (name === 'settings') loadSettingsPage();
+    if (name === 'quotes')   loadQuotesDashboard();
+  }
+
+  // ── QUOTES DASHBOARD ─────────────────────────────────────
+  let allQuotes = [];
+  let currentFilter = 'all';
+
+  async function loadQuotesDashboard() {
+    if (!window.SB_SESSION || !window.SB_COMPANY_ID) return;
+    const listEl = document.getElementById('quotesList');
+    if (!listEl) return;
+    listEl.innerHTML = '<div class="empty-state">Loading...</div>';
+    try {
+      const res = await fetch(
+        `https://gmpamjblvnbiqwbkzmtp.supabase.co/rest/v1/quotes?select=*&company_id=eq.${window.SB_COMPANY_ID}&order=created_at.desc`,
+        { headers: { 'apikey': 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F', 'Authorization': 'Bearer ' + window.SB_SESSION.access_token } }
+      );
+      allQuotes = await res.json();
+      renderQuotesList(currentFilter);
+    } catch(e) {
+      listEl.innerHTML = '<div class="empty-state">Failed to load quotes.</div>';
+    }
+  }
+
+  function filterQuotes(filter, btn) {
+    currentFilter = filter;
+    document.querySelectorAll('.quotes-filter-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderQuotesList(filter);
+  }
+
+  function renderQuotesList(filter) {
+    const listEl = document.getElementById('quotesList');
+    if (!listEl) return;
+    const filtered = filter === 'all' ? allQuotes : allQuotes.filter(q => q.status === filter);
+    if (!filtered.length) {
+      listEl.innerHTML = `<div class="empty-state">${filter === 'all' ? 'No quotes yet. Generate your first quote from Get a Quote.' : 'No ' + filter + ' quotes.'}</div>`;
+      return;
+    }
+    listEl.innerHTML = filtered.map(q => {
+      const d = q.quote_data || {};
+      const date = new Date(q.created_at).toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
+      const amount = q.total_amount ? '₹' + Number(q.total_amount).toLocaleString('en-IN') : '—';
+      const pkg = (d.pkg || 'standard').charAt(0).toUpperCase() + (d.pkg || 'standard').slice(1);
+      const link = window.location.href.split('?')[0] + '?quote=' + q.short_code;
+      return `<div class="quote-card">
+        <div class="quote-card-header">
+          <div>
+            <div class="quote-client-name">${q.client_name || '—'}</div>
+            <div style="font-size:0.78rem;color:var(--muted);margin-top:2px">${q.client_location || ''}</div>
+          </div>
+          <span class="quote-status status-${q.status}">${q.status}</span>
+        </div>
+        <div class="quote-meta">
+          <span>📱 ${q.client_phone || '—'}</span>
+          <span>📦 ${pkg}</span>
+          <span>💰 ${amount}</span>
+          <span>🗓️ ${date}</span>
+        </div>
+        <div class="quote-card-actions">
+          <button class="quote-action-btn" onclick="copyQuoteLink('${link}')" style="background:rgba(201,168,76,0.1);color:var(--gold);border:1px solid rgba(201,168,76,0.3)">🔗 Copy Link</button>
+          <button class="quote-action-btn" onclick="updateQuoteStatus('${q.id}','accepted')" style="background:rgba(16,185,129,0.1);color:#34d399;border:1px solid rgba(16,185,129,0.3)">✓ Accepted</button>
+          <button class="quote-action-btn" onclick="updateQuoteStatus('${q.id}','rejected')" style="background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.3)">✕ Rejected</button>
+          <button class="quote-action-btn" onclick="deleteQuote('${q.id}')" style="background:rgba(255,255,255,0.04);color:var(--muted);border:1px solid rgba(255,255,255,0.1)">🗑️</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function copyQuoteLink(link) {
+    navigator.clipboard.writeText(link).then(() => alert('Link copied!')).catch(() => {
+      prompt('Copy this link:', link);
+    });
+  }
+
+  async function updateQuoteStatus(id, status) {
+    try {
+      await fetch(`https://gmpamjblvnbiqwbkzmtp.supabase.co/rest/v1/quotes?id=eq.${id}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F',
+          'Authorization': 'Bearer ' + window.SB_SESSION.access_token,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ status })
+      });
+      await loadQuotesDashboard();
+    } catch(e) { alert('Failed to update status'); }
+  }
+
+  async function deleteQuote(id) {
+    if (!confirm('Delete this quote? The shareable link will stop working.')) return;
+    try {
+      await fetch(`https://gmpamjblvnbiqwbkzmtp.supabase.co/rest/v1/quotes?id=eq.${id}`, {
+        method: 'DELETE',
+        headers: {
+          'apikey': 'sb_publishable_dGo3_9kBS4vSzupFSKd-iQ_pgC1oZ0F',
+          'Authorization': 'Bearer ' + window.SB_SESSION.access_token
+        }
+      });
+      await loadQuotesDashboard();
+    } catch(e) { alert('Failed to delete quote'); }
   }
 
   function toggleSettings() {
@@ -1069,11 +1172,15 @@
 
     const blob = new Blob([html],{type:'text/html'});
     const url  = URL.createObjectURL(blob);
+    // iOS Safari doesn't support a.click() on blob URLs — open in new tab instead
     const a    = document.createElement('a');
     a.href     = url;
     a.download = 'Quote_' + name.replace(/\s+/g,'_') + '.html';
+    a.target   = '_blank';
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
   // ── MULTI IMAGE UPLOAD ────────────────────────────────────────
