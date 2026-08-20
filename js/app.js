@@ -1170,17 +1170,24 @@
 </body>
 </html>`;
 
-    const blob = new Blob([html],{type:'text/html'});
-    const url  = URL.createObjectURL(blob);
-    // iOS Safari doesn't support a.click() on blob URLs — open in new tab instead
-    const a    = document.createElement('a');
-    a.href     = url;
-    a.download = 'Quote_' + name.replace(/\s+/g,'_') + '.html';
-    a.target   = '_blank';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    // iOS Safari can't download blob URLs — convert to data URL and open in new tab
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const win = window.open('', '_blank');
+      if (win) {
+        win.document.write(html);
+        win.document.close();
+      } else {
+        // Popup blocked — fallback to data URL
+        const a = document.createElement('a');
+        a.href = e.target.result;
+        a.download = 'Quote_' + name.replace(/\s+/g,'_') + '.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    };
+    reader.readAsDataURL(new Blob([html], {type:'text/html'}));
   }
 
   // ── MULTI IMAGE UPLOAD ────────────────────────────────────────
@@ -2229,6 +2236,11 @@
       el.innerHTML=`<strong>${cfg.phone}</strong> &nbsp;|&nbsp; ${cfg.email}`;
     });
     document.querySelectorAll('.footer-logo span, .footer-company-name').forEach(el=>{ el.textContent=cfg.company; });
+    // Update footer logo images with company logo
+    document.querySelectorAll('.footer-logo-img').forEach(img=>{
+      if(cfg.logo){ img.src=cfg.logo; img.style.display='block'; }
+      else { img.style.display='none'; }
+    });
     document.title=cfg.company+' — '+cfg.tagline;
     // Update profile button initials
     const initials = cfg.company
