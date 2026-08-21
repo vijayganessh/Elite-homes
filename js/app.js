@@ -1170,24 +1170,13 @@
 </body>
 </html>`;
 
-    // iOS Safari can't download blob URLs — convert to data URL and open in new tab
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const win = window.open('', '_blank');
-      if (win) {
-        win.document.write(html);
-        win.document.close();
-      } else {
-        // Popup blocked — fallback to data URL
-        const a = document.createElement('a');
-        a.href = e.target.result;
-        a.download = 'Quote_' + name.replace(/\s+/g,'_') + '.html';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      }
-    };
-    reader.readAsDataURL(new Blob([html], {type:'text/html'}));
+    const blob = new Blob([html],{type:'text/html'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'Quote_' + name.replace(/\s+/g,'_') + '.html';
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   // ── MULTI IMAGE UPLOAD ────────────────────────────────────────
